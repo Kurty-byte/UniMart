@@ -28,7 +28,7 @@ Table roles {
   guard_name varchar
   created_at timestamp
   updated_at timestamp
-  Note: 'Spatie Permission table - manages admin vs student roles'
+  Note: 'Spatie Permission table - manages admin, staff, and student roles'
 }
 
 Table permissions {
@@ -62,6 +62,7 @@ Table activity_log {
   Note: 'spatie/laravel-activitylog table - Provides an audit trail of who scanned what and automatically logs old/new statuses.'
 }
 
+
 // Note: other standard tables (sessions, password_reset_tokens, cache, jobs, etc.) omitted for brevity
 
 // ----------------------------------------------------------------------------
@@ -81,6 +82,7 @@ Enum item_status {
 }
 
 Enum order_status {
+  cart
   pending_handover
   completed
   cancelled
@@ -109,18 +111,8 @@ Table items {
   price decimal
   quantity integer
   status item_status
-  dropoff_qr_code varchar [unique, note: 'ULID string (via Str::ulid). Scanned by admin during drop-off at the hub']
+  dropoff_qr_code varchar [unique, note: 'ULID string (via Str::ulid). Scanned by staff during drop-off at the hub']
   dropped_off_at timestamp [note: 'Tracks when item physically arrived at hub for expiration logic']
-  created_at timestamp
-  updated_at timestamp
-}
-
-Table cart_items {
-  id integer [primary key]
-  buyer_id integer [ref: > users.id]
-  item_id integer [ref: > items.id]
-  quantity integer
-  expires_at timestamp [note: 'Soft Hold: 15-minute rolling timer (refreshes if user is active)']
   created_at timestamp
   updated_at timestamp
 }
@@ -129,9 +121,9 @@ Table orders {
   id integer [primary key]
   buyer_id integer [ref: > users.id]
   total_price decimal
-  status order_status
-  claim_qr_code varchar [unique, note: 'ULID string (via Str::ulid). Scanned by admin during buyer physical handover']
-  expires_at timestamp [note: 'Hard Hold: strict 24-hour timer for pickup']
+  status order_status [note: 'cart (soft hold), pending_handover (hard hold), completed, cancelled']
+  claim_qr_code varchar [unique, note: 'ULID string (via Str::ulid). Scanned by staff during buyer physical handover']
+  expires_at timestamp [note: 'Soft Hold (rolling 15m) or Hard Hold (strict 24h)']
   created_at timestamp
   updated_at timestamp
 }
@@ -153,4 +145,14 @@ Table messages {
   item_id integer [ref: > items.id, note: 'Optional context for the conversation']
   content text
   created_at timestamp
+}
+
+Table drawer_counts {
+  id integer [primary key]
+  staff_id integer [ref: > users.id]
+  expected_cash decimal [note: 'Calculated by system based on completed sales and cash payouts']
+  actual_cash decimal [note: 'Amount of cash the staff member reports at end of shift']
+  notes text
+  created_at timestamp
+  updated_at timestamp
 }
