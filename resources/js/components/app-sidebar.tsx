@@ -1,7 +1,21 @@
-import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import {
+    Banknote,
+    DollarSign,
+    Heart,
+    LayoutGrid,
+    List,
+    MessageCircle,
+    Package,
+    QrCode,
+    Search,
+    ShieldAlert,
+    Shirt,
+    Tags,
+    Undo2,
+    User,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -14,37 +28,57 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import admin from '@/routes/admin';
+import student from '@/routes/student';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: dashboard().url,
         icon: LayoutGrid,
     },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
+const adminNavItems: NavItem[] = [
+    { title: 'Scanner', href: admin.scan().url, icon: QrCode },
+    { title: 'Drop-Offs', href: admin.dropOffs().url, icon: Package },
+    { title: 'Claims', href: admin.claims().url, icon: ShieldAlert },
+    { title: 'Returns', href: admin.returns().url, icon: Undo2 },
+    { title: 'Payouts', href: admin.payouts().url, icon: Banknote },
+    { title: 'Finances', href: admin.finances().url, icon: DollarSign },
+    { title: 'Inventory', href: admin.inventory().url, icon: List },
+    { title: 'Categories', href: admin.categories().url, icon: Tags },
+];
+
+const studentNavItems: NavItem[] = [
+    { title: 'Catalog', href: student.catalog().url, icon: Search },
+    { title: 'Saved Items', href: student.saved().url, icon: Heart },
+    { title: 'My Listings', href: student.listings.index().url, icon: Shirt },
+    { title: 'Claims', href: student.claims().url, icon: ShieldAlert },
+    { title: 'Sales', href: student.sales().url, icon: DollarSign },
+    { title: 'Returns', href: student.returns().url, icon: Undo2 },
+    { title: 'Payouts', href: student.payouts().url, icon: Banknote },
+    { title: 'Messages', href: student.messages().url, icon: MessageCircle },
+    { title: 'Profile', href: student.profile().url, icon: User },
 ];
 
 export function AppSidebar() {
+    const { auth } = usePage().props;
+    const roles = auth.user?.roles || [];
+
+    const isAdmin = roles.includes('admin');
+    const isStudent = roles.includes('student') || !isAdmin;
+
+    const homeUrl = isAdmin ? dashboard().url : student.catalog().url;
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={homeUrl} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -53,11 +87,16 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                {isAdmin && (
+                    <>
+                        <NavMain items={mainNavItems} title="Overview" />
+                        <NavMain items={adminNavItems} title="Administration" />
+                    </>
+                )}
+                {isStudent && <NavMain items={studentNavItems} />}
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
