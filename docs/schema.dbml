@@ -1,0 +1,156 @@
+Project UniMart {
+  database_type: 'MySQL'
+  Note: 'Database schema for UniMart - aligned with current Laravel structure'
+}
+
+// ----------------------------------------------------------------------------
+// Existing & Package Laravel Tables
+// ----------------------------------------------------------------------------
+
+Table users {
+  id integer [primary key]
+  name varchar
+  email varchar [unique]
+  email_verified_at timestamp
+  password varchar
+  two_factor_secret text
+  two_factor_recovery_codes text
+  two_factor_confirmed_at timestamp
+  remember_token varchar
+  ewallet_qr_code varchar [note: 'To be added: Seller e-wallet QR image path for digital payouts']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table roles {
+  id integer [primary key]
+  name varchar
+  guard_name varchar
+  created_at timestamp
+  updated_at timestamp
+  Note: 'Spatie Permission table - manages admin vs student roles'
+}
+
+Table permissions {
+  id integer [primary key]
+  name varchar
+  guard_name varchar
+  created_at timestamp
+  updated_at timestamp
+  Note: 'Spatie Permission table'
+}
+
+Table model_has_roles {
+  role_id integer [ref: > roles.id]
+  model_type varchar
+  model_id integer [ref: > users.id]
+}
+
+Table activity_log {
+  id integer [primary key]
+  log_name varchar
+  description text
+  subject_type varchar
+  subject_id integer
+  causer_type varchar
+  causer_id integer [ref: > users.id]
+  properties json
+  batch_uuid varchar
+  event varchar
+  created_at timestamp
+  updated_at timestamp
+  Note: 'spatie/laravel-activitylog table - Provides an audit trail of who scanned what and automatically logs old/new statuses.'
+}
+
+// Note: other standard tables (sessions, password_reset_tokens, cache, jobs, etc.) omitted for brevity
+
+// ----------------------------------------------------------------------------
+// New UniMart Domain Tables
+// ----------------------------------------------------------------------------
+
+Enum item_condition {
+  new
+  like_new
+  used
+}
+
+Enum item_status {
+  pending_dropoff
+  available
+  expired
+}
+
+Enum order_status {
+  pending_handover
+  completed
+  cancelled
+}
+
+Enum payout_status {
+  pending
+  paid_digitally
+  cash_held
+  cash_claimed
+}
+
+Table categories {
+  id integer [primary key]
+  name varchar [note: 'e.g., Physical Education, Uniforms, Textbooks, specific college courses']
+}
+
+Table items {
+  id integer [primary key]
+  seller_id integer [ref: > users.id]
+  category_id integer [ref: > categories.id]
+  title varchar
+  description text
+  condition item_condition
+  images json [note: 'Array of image paths/URLs']
+  price decimal
+  quantity integer
+  status item_status
+  dropoff_qr_code varchar [unique, note: 'ULID string (via Str::ulid). Scanned by admin during drop-off at the hub']
+  dropped_off_at timestamp [note: 'Tracks when item physically arrived at hub for expiration logic']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table cart_items {
+  id integer [primary key]
+  buyer_id integer [ref: > users.id]
+  item_id integer [ref: > items.id]
+  quantity integer
+  expires_at timestamp [note: 'Soft Hold: 15-minute rolling timer (refreshes if user is active)']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table orders {
+  id integer [primary key]
+  buyer_id integer [ref: > users.id]
+  total_price decimal
+  status order_status
+  claim_qr_code varchar [unique, note: 'ULID string (via Str::ulid). Scanned by admin during buyer physical handover']
+  expires_at timestamp [note: 'Hard Hold: strict 24-hour timer for pickup']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table order_items {
+  id integer [primary key]
+  order_id integer [ref: > orders.id]
+  item_id integer [ref: > items.id]
+  quantity integer
+  price decimal
+  payout_status payout_status
+  paid_at timestamp [note: 'Immutable record of exactly when funds were disbursed']
+}
+
+Table messages {
+  id integer [primary key]
+  sender_id integer [ref: > users.id]
+  receiver_id integer [ref: > users.id]
+  item_id integer [ref: > items.id, note: 'Optional context for the conversation']
+  content text
+  created_at timestamp
+}
