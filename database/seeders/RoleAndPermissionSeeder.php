@@ -19,8 +19,25 @@ class RoleAndPermissionSeeder extends Seeder
 
         // Create Permissions
         $permissions = [
+            // Staff / Desk Permissions
+            'access staff portal',
+            'scan qr codes',
+            'process dropoffs',
+            'process claims',
+            'process returns',
+            'process payouts',
+            'submit drawer counts',
+
+            // Admin / Management Permissions
             'access admin portal',
             'manage hub',
+            'manage inventory',
+            'manage categories',
+            'manage users',
+            'manage finances',
+            'audit shifts',
+
+            // Student Permissions
             'create listings',
             'manage own listings',
             'browse catalog',
@@ -32,11 +49,19 @@ class RoleAndPermissionSeeder extends Seeder
         }
 
         // Create Roles and assign created permissions
-        $adminRole = Role::create(['name' => 'admin']);
-        $adminRole->givePermissionTo(Permission::whereIn('name', [
-            'access admin portal',
-            'manage hub',
+        $staffRole = Role::create(['name' => 'staff']);
+        $staffRole->givePermissionTo(Permission::whereIn('name', [
+            'access staff portal',
+            'scan qr codes',
+            'process dropoffs',
+            'process claims',
+            'process returns',
+            'process payouts',
+            'submit drawer counts',
         ])->get());
+
+        $adminRole = Role::create(['name' => 'admin']);
+        $adminRole->givePermissionTo(Permission::all());
 
         $studentRole = Role::create(['name' => 'student']);
         $studentRole->givePermissionTo(Permission::whereIn('name', [

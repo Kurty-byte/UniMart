@@ -24,6 +24,13 @@ class DatabaseSeeder extends Seeder
         ]);
         $admin->assignRole('admin');
 
+        // Create Staff User
+        $staff = User::factory()->create([
+            'name' => 'Staff Member',
+            'email' => 'staff@unimart.test',
+        ]);
+        $staff->assignRole('staff');
+
         // Create Student User 1
         $student1 = User::factory()->create([
             'name' => 'Student User 1',
