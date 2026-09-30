@@ -1,25 +1,25 @@
 import { Head } from '@inertiajs/react';
-import admin from '@/routes/admin';
+import staff from '@/routes/staff';
 
-export default function Claims() {
+export default function AdminClaims() {
     return (
         <>
             <Head title="Claims" />
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
                 <div className="p-4 border rounded-xl bg-card text-card-foreground shadow-sm">
                     <h2 className="text-xl font-bold">Claims</h2>
-                    <p className="text-muted-foreground mt-2">Placeholder page for Claims.</p>
+                    <p className="text-muted-foreground mt-2">Redirected to staff desk operations.</p>
                 </div>
             </div>
         </>
     );
 }
 
-Claims.layout = {
+AdminClaims.layout = {
     breadcrumbs: [
         {
             title: 'Claims',
-            href: admin.claims().url,
+            href: staff.claims().url,
         },
     ],
 };

@@ -1,25 +1,25 @@
 import { Head } from '@inertiajs/react';
-import admin from '@/routes/admin';
+import staff from '@/routes/staff';
 
-export default function Scan() {
+export default function AdminScan() {
     return (
         <>
             <Head title="Admin Scanner" />
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
                 <div className="p-4 border rounded-xl bg-card text-card-foreground shadow-sm">
                     <h2 className="text-xl font-bold">Admin Scanner</h2>
-                    <p className="text-muted-foreground mt-2">Placeholder page for Admin Scanner.</p>
+                    <p className="text-muted-foreground mt-2">Redirected to staff desk scanner.</p>
                 </div>
             </div>
         </>
     );
 }
 
-Scan.layout = {
+AdminScan.layout = {
     breadcrumbs: [
         {
-            title: 'Admin Scanner',
-            href: admin.scan().url,
+            title: 'Staff Scanner',
+            href: staff.scan().url,
         },
     ],
 };

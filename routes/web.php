@@ -7,28 +7,39 @@ Route::inertia('/', 'welcome')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         $user = auth()->user();
-        if ($user->hasRole('student') && ! $user->hasRole('admin')) {
-            return redirect()->route('student.catalog');
+        if ($user->hasRole('admin')) {
+            return inertia('dashboard');
         }
 
-        return inertia('dashboard');
+        if ($user->hasRole('staff')) {
+            return redirect()->route('staff.scan');
+        }
+
+        return redirect()->route('student.browse');
     })->name('dashboard');
 
-    // Admin Routes
+    // Staff Routes (Desk Operations - accessible by Staff and Admins)
+    Route::middleware('role:staff|admin')->prefix('staff')->name('staff.')->group(function () {
+        Route::inertia('scan', 'staff/scan')->name('scan');
+        Route::inertia('drop-offs', 'staff/drop-offs')->name('drop-offs');
+        Route::inertia('claims', 'staff/claims')->name('claims');
+        Route::inertia('returns', 'staff/returns')->name('returns');
+        Route::inertia('payouts', 'staff/payouts')->name('payouts');
+        Route::inertia('drawer-count', 'staff/drawer-count')->name('drawer-count');
+    });
+
+    // Admin Routes (Oversight & Management)
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::inertia('scan', 'admin/scan')->name('scan');
-        Route::inertia('drop-offs', 'admin/drop-offs')->name('drop-offs');
-        Route::inertia('claims', 'admin/claims')->name('claims');
-        Route::inertia('returns', 'admin/returns')->name('returns');
-        Route::inertia('payouts', 'admin/payouts')->name('payouts');
-        Route::inertia('finances', 'admin/finances')->name('finances');
         Route::inertia('inventory', 'admin/inventory')->name('inventory');
         Route::inertia('categories', 'admin/categories')->name('categories');
+        Route::inertia('users', 'admin/users')->name('users');
+        Route::inertia('finances', 'admin/finances')->name('finances');
+        Route::inertia('shift-audits', 'admin/shift-audits')->name('shift-audits');
     });
 
     // Student Routes (Unified Seller and Buyer)
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
-        Route::inertia('catalog', 'student/catalog')->name('catalog');
+        Route::inertia('browse', 'student/browse')->name('browse');
         Route::inertia('cart', 'student/cart')->name('cart');
         Route::inertia('saved', 'student/saved')->name('saved');
 
@@ -41,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::inertia('payouts', 'student/payouts')->name('payouts');
 
         Route::inertia('messages', 'student/messages')->name('messages');
-        Route::inertia('profile', 'student/profile')->name('profile');
+        Route::redirect('profile', '/settings/profile')->name('profile');
     });
 });
 

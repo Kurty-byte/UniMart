@@ -1,25 +1,25 @@
 import { Head } from '@inertiajs/react';
 import student from '@/routes/student';
 
-export default function Catalog() {
+export default function Browse() {
     return (
         <>
-            <Head title="Catalog" />
+            <Head title="Browse" />
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
                 <div className="p-4 border rounded-xl bg-card text-card-foreground shadow-sm">
-                    <h2 className="text-xl font-bold">Catalog</h2>
-                    <p className="text-muted-foreground mt-2">Placeholder page for Catalog.</p>
+                    <h2 className="text-xl font-bold">Browse</h2>
+                    <p className="text-muted-foreground mt-2">Placeholder page for Browse.</p>
                 </div>
             </div>
         </>
     );
 }
 
-Catalog.layout = {
+Browse.layout = {
     breadcrumbs: [
         {
-            title: 'Catalog',
-            href: student.catalog().url,
+            title: 'Browse',
+            href: student.browse().url,
         },
     ],
 };
