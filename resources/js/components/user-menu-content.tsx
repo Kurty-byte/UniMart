@@ -1,5 +1,7 @@
-import { Link, router } from '@inertiajs/react';
+import { useState } from 'react';
+import { Link } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
+import { LogoutConfirmationDialog } from '@/components/logout-confirmation-dialog';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -8,7 +10,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
-import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import type { User } from '@/types';
 
@@ -17,12 +18,8 @@ type Props = {
 };
 
 export function UserMenuContent({ user }: Props) {
+    const [showLogoutDialog, setShowLogoutDialog] = useState(false);
     const cleanup = useMobileNavigation();
-
-    const handleLogout = () => {
-        cleanup();
-        router.flushAll();
-    };
 
     return (
         <>
@@ -46,18 +43,22 @@ export function UserMenuContent({ user }: Props) {
                 </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-                <Link
-                    className="block w-full cursor-pointer"
-                    href={logout()}
-                    as="button"
-                    onClick={handleLogout}
-                    data-test="logout-button"
-                >
-                    <LogOut className="mr-2" />
-                    Log out
-                </Link>
+            <DropdownMenuItem
+                className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+                onSelect={(e) => {
+                    e.preventDefault();
+                    setShowLogoutDialog(true);
+                }}
+                data-test="logout-button"
+            >
+                <LogOut className="mr-2" />
+                Log out
             </DropdownMenuItem>
+
+            <LogoutConfirmationDialog
+                open={showLogoutDialog}
+                onOpenChange={setShowLogoutDialog}
+            />
         </>
     );
 }

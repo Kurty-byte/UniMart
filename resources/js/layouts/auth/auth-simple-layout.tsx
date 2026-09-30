@@ -15,10 +15,16 @@ export default function AuthSimpleLayout({
                     <div className="flex flex-col items-center gap-4">
                         <Link
                             href={home()}
-                            className="flex flex-col items-center gap-2 font-medium"
+                            className="flex items-center gap-3 font-medium group"
                         >
-                            <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                                <AppLogoIcon className="size-6 fill-current" />
+                            <AppLogoIcon className="size-12 object-contain transition-transform duration-300 group-hover:scale-105" />
+                            <div className="flex flex-col text-left">
+                                <span className="text-2xl font-black tracking-tight text-foreground font-sans leading-none">
+                                    Uni<span className="text-golden-sand">Mart</span>
+                                </span>
+                                <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase leading-none mt-1">
+                                    Campus Hub
+                                </span>
                             </div>
                             <span className="sr-only">{title}</span>
                         </Link>

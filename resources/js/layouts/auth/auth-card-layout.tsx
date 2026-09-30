@@ -24,10 +24,16 @@ export default function AuthCardLayout({
             <div className="flex w-full max-w-md flex-col gap-6">
                 <Link
                     href={home()}
-                    className="flex items-center gap-2 self-center font-medium"
+                    className="flex items-center gap-3 self-center font-medium group"
                 >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                        <AppLogoIcon className="size-6 fill-current" />
+                    <AppLogoIcon className="size-12 object-contain transition-transform duration-300 group-hover:scale-105" />
+                    <div className="flex flex-col text-left">
+                        <span className="text-2xl font-black tracking-tight text-foreground font-sans leading-none">
+                            Uni<span className="text-golden-sand">Mart</span>
+                        </span>
+                        <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase leading-none mt-1">
+                            Campus Hub
+                        </span>
                     </div>
                 </Link>
 
