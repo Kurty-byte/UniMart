@@ -7,6 +7,7 @@ use App\Http\Controllers\EwalletQrController;
 use App\Http\Controllers\Student\CartController;
 use App\Http\Controllers\Student\CatalogController;
 use App\Http\Controllers\Student\ListingController;
+use App\Http\Controllers\Student\OrderClaimController;
 use App\Http\Middleware\RefreshCartSoftHold;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('cart/items/{orderItem}', [CartController::class, 'updateItem'])->name('cart.items.update');
         Route::delete('cart/items/{orderItem}', [CartController::class, 'destroyItem'])->name('cart.items.destroy');
         Route::delete('cart', [CartController::class, 'clear'])->name('cart.clear');
+        Route::post('cart/checkout', [OrderClaimController::class, 'checkout'])->name('cart.checkout');
         Route::post('cart/heartbeat', function (Request $request, RefreshCartHold $refreshCartHold) {
             $user = $request->user();
             $cart = Order::query()
@@ -87,7 +89,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('listings/{item}', [ListingController::class, 'update'])->name('listings.update');
         Route::delete('listings/{item}', [ListingController::class, 'destroy'])->name('listings.destroy');
 
-        Route::inertia('claims', 'student/claims')->name('claims');
+        Route::get('claims', [OrderClaimController::class, 'index'])->name('claims');
+        Route::delete('claims/{order}', [OrderClaimController::class, 'cancel'])->name('claims.cancel');
         Route::inertia('sales', 'student/sales')->name('sales');
         Route::inertia('returns', 'student/returns')->name('returns');
         Route::inertia('payouts', 'student/payouts')->name('payouts');
