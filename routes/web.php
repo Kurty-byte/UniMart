@@ -45,10 +45,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::inertia('cart', 'student/cart')->name('cart');
         Route::inertia('saved', 'student/saved')->name('saved');
 
-        Route::inertia('listings', 'student/listings/index')->name('listings.index');
+        Route::get('listings', [ListingController::class, 'index'])->name('listings.index');
         Route::get('listings/create', [ListingController::class, 'create'])->name('listings.create');
         Route::post('listings', [ListingController::class, 'store'])->name('listings.store');
         Route::get('listings/{item}', [ListingController::class, 'show'])->name('listings.show');
+        Route::get('listings/{item}/edit', [ListingController::class, 'edit'])->name('listings.edit');
+        Route::put('listings/{item}', [ListingController::class, 'update'])->name('listings.update');
+        Route::delete('listings/{item}', [ListingController::class, 'destroy'])->name('listings.destroy');
 
         Route::inertia('claims', 'student/claims')->name('claims');
         Route::inertia('sales', 'student/sales')->name('sales');
