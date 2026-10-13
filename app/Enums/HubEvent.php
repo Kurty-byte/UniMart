@@ -17,6 +17,9 @@ enum HubEvent: string
     case ShiftClosed = 'shift_closed';
     case UserSuspended = 'user_suspended';
     case UserUnsuspended = 'user_unsuspended';
+    case UserCreated = 'user_created';
+    case UserUpdated = 'user_updated';
+    case UserDeleted = 'user_deleted';
     case StaffAccountCreated = 'staff_account_created';
     case StaffPermissionsUpdated = 'staff_permissions_updated';
     case StaffRoleRevoked = 'staff_role_revoked';
@@ -43,6 +46,9 @@ enum HubEvent: string
             self::ShiftClosed => 'Staff shift closed with drawer reconciliation',
             self::UserSuspended => 'User suspended by administrator',
             self::UserUnsuspended => 'User unsuspended by administrator',
+            self::UserCreated => 'User account created by administrator',
+            self::UserUpdated => 'User account updated by administrator',
+            self::UserDeleted => 'User account deleted by administrator',
             self::StaffAccountCreated => 'Staff account created',
             self::StaffPermissionsUpdated => 'Staff permissions updated',
             self::StaffRoleRevoked => 'Staff role revoked',
