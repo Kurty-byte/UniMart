@@ -3,8 +3,11 @@
 use App\Actions\Cart\RefreshCartHold;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\FinanceController;
+use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ShiftAuditController;
 use App\Http\Controllers\Admin\StaffManagementController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\EwalletQrController;
@@ -68,7 +71,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin Routes (Oversight & Management)
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::inertia('inventory', 'admin/inventory')->name('inventory');
+        Route::get('inventory', [InventoryController::class, 'index'])->name('inventory');
+        Route::post('inventory/{item}/take-down', [InventoryController::class, 'takeDown'])->name('inventory.take-down');
         Route::get('categories', [CategoryController::class, 'index'])->name('categories');
         Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::put('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
@@ -78,8 +82,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('users/{user}/unsuspend', [UserController::class, 'unsuspend'])->name('users.unsuspend');
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
         Route::post('reports/{report}/resolve', [ReportController::class, 'resolve'])->name('reports.resolve');
-        Route::inertia('finances', 'admin/finances')->name('finances');
-        Route::inertia('shift-audits', 'admin/shift-audits')->name('shift-audits');
+        Route::get('finances', [FinanceController::class, 'index'])->name('finances');
+        Route::get('shift-audits', [ShiftAuditController::class, 'index'])->name('shift-audits');
         Route::get('settings', [SettingController::class, 'index'])->name('settings');
         Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
         Route::get('staff', [StaffManagementController::class, 'index'])->name('staff.index');
