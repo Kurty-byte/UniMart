@@ -14,6 +14,8 @@ use App\Http\Controllers\Student\CartController;
 use App\Http\Controllers\Student\CatalogController;
 use App\Http\Controllers\Student\ListingController;
 use App\Http\Controllers\Student\OrderClaimController;
+use App\Http\Controllers\Student\PayoutController as StudentPayoutController;
+use App\Http\Controllers\Student\SalesController;
 use App\Http\Middleware\RefreshCartSoftHold;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -46,11 +48,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('claims', [ClaimController::class, 'index'])->name('claims');
         Route::get('returns', [ReturnController::class, 'index'])->name('returns');
         Route::post('returns/{item}/retrieve', [ReturnController::class, 'retrieve'])->name('returns.retrieve');
-        Route::get('payouts', [PayoutController::class, 'index'])->name('payouts');
-        Route::post('payouts/{orderItem}/digital', [PayoutController::class, 'digital'])->name('payouts.digital');
-        Route::post('payouts/{orderItem}/hold', [PayoutController::class, 'hold'])->name('payouts.hold');
         Route::middleware('shift.open')->group(function () {
             Route::post('claims/{order}/complete', [ClaimController::class, 'complete'])->name('claims.complete');
+            Route::get('payouts', [PayoutController::class, 'index'])->name('payouts');
+            Route::post('payouts/{orderItem}/digital', [PayoutController::class, 'digital'])->name('payouts.digital');
+            Route::post('payouts/{orderItem}/hold', [PayoutController::class, 'hold'])->name('payouts.hold');
             Route::post('payouts/{orderItem}/release', [PayoutController::class, 'release'])->name('payouts.release');
         });
         Route::get('drawer-count', [DrawerCountController::class, 'index'])->name('drawer-count');
@@ -110,9 +112,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('claims', [OrderClaimController::class, 'index'])->name('claims');
         Route::delete('claims/{order}', [OrderClaimController::class, 'cancel'])->name('claims.cancel');
-        Route::inertia('sales', 'student/sales')->name('sales');
+        Route::get('sales', [SalesController::class, 'index'])->name('sales');
         Route::inertia('returns', 'student/returns')->name('returns');
-        Route::inertia('payouts', 'student/payouts')->name('payouts');
+        Route::get('payouts', [StudentPayoutController::class, 'index'])->name('payouts');
 
         Route::inertia('messages', 'student/messages')->name('messages');
         Route::redirect('profile', '/settings/profile')->name('profile');

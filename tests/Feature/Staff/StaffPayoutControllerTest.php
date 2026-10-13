@@ -9,6 +9,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 it('displays pending payouts and held cash items to staff', function () {
     $staff = User::factory()->staff()->create();
+    app(OpenShift::class)->handle($staff, '1000.00');
     $seller = User::factory()->student()->create();
     $item = Item::factory()->for($seller, 'seller')->create();
 
@@ -30,6 +31,7 @@ it('prevents non-staff from accessing staff payouts', function () {
 
 it('disburses digital payout via controller endpoint', function () {
     $staff = User::factory()->staff()->create();
+    app(OpenShift::class)->handle($staff, '1000.00');
     $seller = User::factory()->student()->create(['ewallet_qr_code' => 'qr/path.png']);
     $item = Item::factory()->for($seller, 'seller')->create();
     $orderItem = OrderItem::factory()->for($item)->create(['payout_status' => PayoutStatus::Pending]);
@@ -43,6 +45,7 @@ it('disburses digital payout via controller endpoint', function () {
 
 it('holds cash payout via controller endpoint', function () {
     $staff = User::factory()->staff()->create();
+    app(OpenShift::class)->handle($staff, '1000.00');
     $seller = User::factory()->student()->create();
     $item = Item::factory()->for($seller, 'seller')->create();
     $orderItem = OrderItem::factory()->for($item)->create(['payout_status' => PayoutStatus::Pending]);
