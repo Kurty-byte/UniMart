@@ -18,6 +18,7 @@ Table users {
   two_factor_confirmed_at timestamp
   remember_token varchar
   ewallet_qr_code varchar [note: 'To be added: Seller e-wallet QR image path for digital payouts']
+  suspended_at timestamp [null, note: 'Admin moderation: marks suspended/banned accounts']
   created_at timestamp
   updated_at timestamp
 }
@@ -78,7 +79,10 @@ Enum item_condition {
 Enum item_status {
   pending_dropoff
   available
+  sold
   expired
+  retrieved
+  rejected
 }
 
 Enum order_status {
@@ -86,6 +90,7 @@ Enum order_status {
   pending_handover
   completed
   cancelled
+  expired
 }
 
 Enum payout_status {
@@ -95,9 +100,16 @@ Enum payout_status {
   cash_claimed
 }
 
+Enum report_status {
+  pending
+  resolved
+  dismissed
+}
+
 Table categories {
   id integer [primary key]
   name varchar [note: 'e.g., Physical Education, Uniforms, Textbooks, specific college courses']
+  parent_id integer [ref: > categories.id, null, note: 'Allows category hierarchy, e.g. College -> Specific Course']
 }
 
 Table items {
@@ -111,19 +123,23 @@ Table items {
   price decimal
   quantity integer
   status item_status
+  shelf_location varchar [null, note: 'Optional shelf/bin code for Hub organization']
   dropoff_qr_code varchar [unique, note: 'ULID string (via Str::ulid). Scanned by staff during drop-off at the hub']
-  dropped_off_at timestamp [note: 'Tracks when item physically arrived at hub for expiration logic']
+  dropped_off_at timestamp [null, note: 'Tracks when item physically arrived at hub for expiration logic']
   created_at timestamp
   updated_at timestamp
+  deleted_at timestamp [null, note: 'Soft deletes to preserve order history']
 }
 
 Table orders {
   id integer [primary key]
   buyer_id integer [ref: > users.id]
+  handled_by integer [ref: > users.id, null, note: 'Staff member who completed physical handover and took payment']
   total_price decimal
-  status order_status [note: 'cart (soft hold), pending_handover (hard hold), completed, cancelled']
-  claim_qr_code varchar [unique, note: 'ULID string (via Str::ulid). Scanned by staff during buyer physical handover']
-  expires_at timestamp [note: 'Soft Hold (rolling 15m) or Hard Hold (strict 24h)']
+  status order_status [note: 'cart (soft hold), pending_handover (hard hold), completed, cancelled, expired']
+  claim_qr_code varchar [unique, null, note: 'ULID string (via Str::ulid). Generated upon hard hold commitment']
+  expires_at timestamp [null, note: 'Soft Hold (rolling 15m) or Hard Hold (strict 24h)']
+  completed_at timestamp [null, note: 'Timestamp when transaction completed at hub']
   created_at timestamp
   updated_at timestamp
 }
@@ -135,24 +151,60 @@ Table order_items {
   quantity integer
   price decimal
   payout_status payout_status
-  paid_at timestamp [note: 'Immutable record of exactly when funds were disbursed']
+  paid_by integer [ref: > users.id, null, note: 'Staff member who disbursed the payout']
+  paid_at timestamp [null, note: 'Immutable record of exactly when funds were disbursed']
 }
 
 Table messages {
   id integer [primary key]
   sender_id integer [ref: > users.id]
   receiver_id integer [ref: > users.id]
-  item_id integer [ref: > items.id, note: 'Optional context for the conversation']
+  item_id integer [ref: > items.id, null, note: 'Optional context for the conversation']
   content text
+  read_at timestamp [null, note: 'Timestamp when read by receiver']
   created_at timestamp
 }
 
 Table drawer_counts {
   id integer [primary key]
   staff_id integer [ref: > users.id]
-  expected_cash decimal [note: 'Calculated by system based on completed sales and cash payouts']
+  shift_started_at timestamp [note: 'Start of the shift period being reconciled']
+  shift_ended_at timestamp [note: 'End of shift / reconciliation timestamp']
+  expected_cash decimal [note: 'Calculated by system based on completed sales and cash payouts in shift window']
   actual_cash decimal [note: 'Amount of cash the staff member reports at end of shift']
-  notes text
+  notes text [null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table reports {
+  id integer [primary key]
+  reporter_id integer [ref: > users.id]
+  reported_user_id integer [ref: > users.id, null]
+  item_id integer [ref: > items.id, null]
+  reason text
+  status report_status [default: 'pending']
+  resolved_by integer [ref: > users.id, null]
+  resolved_at timestamp [null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table settings {
+  id integer [primary key]
+  key varchar [unique, note: 'e.g. cart_soft_hold_minutes, order_hard_hold_hours, item_shelf_expiry_days']
+  value text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table notifications {
+  id varchar [primary key, note: 'Standard Laravel UUID']
+  type varchar
+  notifiable_type varchar
+  notifiable_id integer [ref: > users.id]
+  data text [note: 'JSON payload with payout/expiry/claim details']
+  read_at timestamp [null]
   created_at timestamp
   updated_at timestamp
 }
