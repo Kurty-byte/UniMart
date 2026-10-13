@@ -187,4 +187,20 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Report::class, 'resolved_by');
     }
+
+    /**
+     * Get the currently active open shift for this staff member, if any.
+     */
+    public function activeShift(): ?DrawerCount
+    {
+        return $this->drawerCounts()->open()->first();
+    }
+
+    /**
+     * Determine if this staff member currently has an active open shift.
+     */
+    public function hasOpenShift(): bool
+    {
+        return $this->drawerCounts()->open()->exists();
+    }
 }
