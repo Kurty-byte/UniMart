@@ -52,3 +52,23 @@ it('allows access to protected desk routes when shift is open', function () {
     $this->actingAs($staff)->get(route('staff.payouts'))
         ->assertOk();
 });
+
+it('prevents staff without drawer_count.open permission from opening a shift', function () {
+    $staff = User::factory()->staff()->create();
+    $staff->revokePermissionTo('drawer_count.open');
+
+    $this->actingAs($staff)->post(route('staff.shifts.open'), [
+        'opening_cash' => '1000.00',
+    ])->assertForbidden();
+});
+
+it('prevents staff without drawer_count.close permission from closing a shift', function () {
+    $staff = User::factory()->staff()->create();
+    app(OpenShift::class)->handle($staff, '1000.00');
+    $staff->revokePermissionTo('drawer_count.close');
+
+    $this->actingAs($staff)->post(route('staff.shifts.close'), [
+        'actual_cash' => '1000.00',
+        'notes' => 'Unauthorized close',
+    ])->assertForbidden();
+});

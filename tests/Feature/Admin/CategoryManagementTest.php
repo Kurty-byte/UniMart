@@ -155,4 +155,3 @@ it('forbids users without category.delete permission from deleting categories', 
         ->delete(route('admin.categories.destroy', $category))
         ->assertForbidden();
 });
-

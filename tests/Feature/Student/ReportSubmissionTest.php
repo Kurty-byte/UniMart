@@ -6,6 +6,8 @@ use App\Models\Report;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Activitylog\Models\Activity;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 test('student can view their filed reports index page', function () {
     $student = User::factory()->student()->create();
@@ -155,4 +157,17 @@ test('throttles rapid report submissions', function () {
         'reported_user_id' => $target->id,
         'reason' => 'Spam report attempt 6',
     ])->assertStatus(429);
+});
+
+test('forbids students without report.create permission', function () {
+    Role::findByName('student')->revokePermissionTo('report.create');
+    app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+    $student = User::factory()->student()->create();
+    $target = User::factory()->student()->create();
+
+    $this->actingAs($student)->post(route('student.reports.store'), [
+        'reported_user_id' => $target->id,
+        'reason' => 'Should be forbidden',
+    ])->assertForbidden();
 });

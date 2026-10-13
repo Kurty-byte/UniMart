@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Support\HubAudit;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,6 +22,8 @@ class SettingController extends Controller
      */
     public function index(Request $request): Response
     {
+        Gate::authorize('viewAny', Setting::class);
+
         return Inertia::render('admin/settings', [
             'settings' => [
                 'cart_soft_hold_minutes' => Setting::integer(SettingKey::CartSoftHoldMinutes),

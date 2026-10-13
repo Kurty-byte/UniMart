@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DrawerCount;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,6 +16,8 @@ class ShiftAuditController extends Controller
      */
     public function index(Request $request): Response
     {
+        Gate::authorize('audit', DrawerCount::class);
+
         $shifts = DrawerCount::query()
             ->with(['staff:id,name,email'])
             ->latest('id')

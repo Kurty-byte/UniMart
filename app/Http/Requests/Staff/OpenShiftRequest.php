@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Staff;
 
+use App\Models\DrawerCount;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,7 @@ class OpenShiftRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('submit drawer counts') ?? false;
+        return $this->user()?->can('open', DrawerCount::class) ?? false;
     }
 
     /**

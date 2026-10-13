@@ -6,6 +6,8 @@ use App\Models\Setting;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Activitylog\Models\Activity;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 it('renders admin settings page with current timers', function () {
     $admin = User::factory()->admin()->create();
@@ -40,6 +42,19 @@ it('prevents non-admins from changing system settings', function () {
     $staff = User::factory()->staff()->create();
     $this->actingAs($staff)->put(route('admin.settings.update'), ['cart_soft_hold_minutes' => 30])
         ->assertForbidden();
+});
+
+it('forbids users without setting.update permission from updating system settings', function () {
+    Role::findByName('admin')->revokePermissionTo('setting.update');
+    app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)->put(route('admin.settings.update'), [
+        'cart_soft_hold_minutes' => 30,
+        'order_hard_hold_hours' => 48,
+        'item_shelf_expiry_days' => 60,
+    ])->assertForbidden();
 });
 
 it('validates settings timer bounds', function () {

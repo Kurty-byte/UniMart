@@ -12,7 +12,7 @@ class ResolveQrRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('scan qr codes') ?? false;
+        return $this->user()?->can('qr.scan') ?? false;
     }
 
     /**

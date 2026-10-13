@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Report;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,11 @@ class ResolveReportRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->hasRole('admin') ?? false;
+        $report = $this->route('report');
+
+        return $report instanceof Report
+            ? ($this->user()?->can('resolve', $report) ?? false)
+            : ($this->user()?->can('resolve', Report::class) ?? false);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Staff;
 
+use App\Models\DrawerCount;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,11 @@ class CloseShiftRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('submit drawer counts') ?? false;
+        $activeShift = $this->user()?->activeShift();
+
+        return $activeShift
+            ? ($this->user()?->can('close', $activeShift) ?? false)
+            : ($this->user()?->can('close', DrawerCount::class) ?? false);
     }
 
     /**

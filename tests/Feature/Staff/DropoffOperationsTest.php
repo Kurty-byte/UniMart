@@ -84,4 +84,3 @@ it('forbids staff without item.dropoff.approve permission', function () {
         'shelf_location' => 'Shelf-B04',
     ])->assertForbidden();
 });
-

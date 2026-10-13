@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Student;
 
+use App\Models\Report;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -12,7 +13,7 @@ class StoreReportRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->hasRole('student') ?? false;
+        return $this->user()?->can('create', Report::class) ?? false;
     }
 
     /**

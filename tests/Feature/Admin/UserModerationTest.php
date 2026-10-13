@@ -8,6 +8,8 @@ use App\Models\Report;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Activitylog\Models\Activity;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 it('suspends a user and releases their active held reservations', function () {
     $admin = User::factory()->admin()->create();
@@ -54,6 +56,19 @@ it('resolves a user report with notes', function () {
     $activity = Activity::inLog('hub')->where('event', HubEvent::ReportResolved->value)->first();
     expect($activity)->not->toBeNull()
         ->and($activity->causer->is($admin))->toBeTrue();
+});
+
+it('forbids users without report.resolve permission from resolving a report', function () {
+    Role::findByName('admin')->revokePermissionTo('report.resolve');
+    app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+    $admin = User::factory()->admin()->create();
+    $report = Report::factory()->create(['status' => ReportStatus::Pending]);
+
+    $this->actingAs($admin)->post(route('admin.reports.resolve', $report), [
+        'status' => 'resolved',
+        'resolution_notes' => 'Attempting resolve without permission.',
+    ])->assertForbidden();
 });
 
 it('lists users with status and listing counts', function () {

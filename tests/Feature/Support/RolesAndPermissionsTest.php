@@ -32,4 +32,3 @@ it('gives student factory users the student role and student permissions', funct
         ->and($student->can('item.create'))->toBeTrue()
         ->and($student->can('item.dropoff.approve'))->toBeFalse();
 });
-

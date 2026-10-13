@@ -4,6 +4,8 @@ use App\Enums\OrderStatus;
 use App\Models\Item;
 use App\Models\Order;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 it('resolves a drop-off QR code to a pending item', function () {
     $staff = User::factory()->staff()->create();
@@ -48,9 +50,19 @@ it('returns 422 if the scanned QR code is unrecognized', function () {
         ->assertUnprocessable();
 });
 
-it('forbids users without scan qr codes permission', function () {
+it('forbids users without qr.scan permission', function () {
     $student = User::factory()->student()->create();
 
     $this->actingAs($student)->postJson(route('staff.scan.resolve'), ['code' => 'ANY_CODE'])
+        ->assertForbidden();
+});
+
+it('forbids staff if qr.scan permission is revoked', function () {
+    Role::findByName('staff')->revokePermissionTo('qr.scan');
+    app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+    $staff = User::factory()->staff()->create();
+
+    $this->actingAs($staff)->postJson(route('staff.scan.resolve'), ['code' => 'ANY_CODE'])
         ->assertForbidden();
 });
