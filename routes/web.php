@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\EwalletQrController;
+use App\Http\Controllers\Student\CatalogController;
 use App\Http\Controllers\Student\ListingController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,7 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Student Routes (Unified Seller and Buyer)
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
-        Route::inertia('browse', 'student/browse')->name('browse');
+        Route::get('browse', [CatalogController::class, 'index'])->name('browse');
         Route::inertia('cart', 'student/cart')->name('cart');
         Route::inertia('saved', 'student/saved')->name('saved');
 

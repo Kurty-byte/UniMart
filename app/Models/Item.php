@@ -162,6 +162,33 @@ class Item extends Model
     }
 
     /**
+     * Scope the query to items purchasable in the public catalog.
+     *
+     * @param  Builder<$this>  $query
+     * @return Builder<$this>
+     */
+    public function scopeInCatalog(Builder $query): Builder
+    {
+        return $query->where('status', ItemStatus::Available)
+            ->where('quantity', '>', 0)
+            ->whereHas('seller', fn (Builder $sellerQuery) => $sellerQuery->whereNull('suspended_at'));
+    }
+
+    /**
+     * Determine if this item is purchasable in the catalog.
+     */
+    public function isInCatalog(): bool
+    {
+        if ($this->status !== ItemStatus::Available || $this->quantity <= 0) {
+            return false;
+        }
+
+        $seller = $this->relationLoaded('seller') ? $this->seller : $this->seller()->first();
+
+        return $seller !== null && $seller->suspended_at === null;
+    }
+
+    /**
      * Get public URLs for the item images.
      *
      * @return Attribute<array<string>, never>
