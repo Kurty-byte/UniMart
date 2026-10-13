@@ -49,7 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Staff Routes (Desk Operations - accessible by Staff and Admins)
     Route::middleware('role:staff|admin')->prefix('staff')->name('staff.')->group(function () {
         Route::get('scan', [ScanController::class, 'index'])->name('scan');
-        Route::post('scan/resolve', [ScanController::class, 'resolve'])->name('scan.resolve');
+        Route::post('scan/resolve', [ScanController::class, 'resolve'])->middleware('throttle:qr-scan')->name('scan.resolve');
         Route::get('drop-offs', [DropoffController::class, 'index'])->name('drop-offs');
         Route::post('drop-offs/{item}/approve', [DropoffController::class, 'approve'])->name('drop-offs.approve');
         Route::post('drop-offs/{item}/reject', [DropoffController::class, 'reject'])->name('drop-offs.reject');
@@ -101,7 +101,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('cart/items/{orderItem}', [CartController::class, 'updateItem'])->name('cart.items.update');
         Route::delete('cart/items/{orderItem}', [CartController::class, 'destroyItem'])->name('cart.items.destroy');
         Route::delete('cart', [CartController::class, 'clear'])->name('cart.clear');
-        Route::post('cart/checkout', [OrderClaimController::class, 'checkout'])->name('cart.checkout');
+        Route::post('cart/checkout', [OrderClaimController::class, 'checkout'])->middleware('throttle:checkout')->name('cart.checkout');
         Route::post('cart/heartbeat', function (Request $request, RefreshCartHold $refreshCartHold) {
             $user = $request->user();
             $cart = Order::query()
@@ -119,12 +119,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'status' => $active ? 'active' : 'expired',
                 'expires_at' => $cart->fresh()->expires_at?->toISOString(),
             ]);
-        })->name('cart.heartbeat');
+        })->middleware('throttle:cart-heartbeat')->name('cart.heartbeat');
         Route::inertia('saved', 'student/saved')->name('saved');
 
         Route::get('listings', [ListingController::class, 'index'])->name('listings.index');
         Route::get('listings/create', [ListingController::class, 'create'])->name('listings.create');
-        Route::post('listings', [ListingController::class, 'store'])->name('listings.store');
+        Route::post('listings', [ListingController::class, 'store'])->middleware('throttle:uploads')->name('listings.store');
         Route::get('listings/{item}', [ListingController::class, 'show'])->name('listings.show');
         Route::get('listings/{item}/edit', [ListingController::class, 'edit'])->name('listings.edit');
         Route::put('listings/{item}', [ListingController::class, 'update'])->name('listings.update');
@@ -137,7 +137,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('payouts', [StudentPayoutController::class, 'index'])->name('payouts');
 
         Route::get('messages', [MessageController::class, 'index'])->name('messages');
-        Route::post('messages', [MessageController::class, 'store'])->name('messages.store');
+        Route::post('messages', [MessageController::class, 'store'])->middleware('throttle:messaging')->name('messages.store');
         Route::post('messages/{item}/{user}/read', [MessageController::class, 'read'])->name('messages.read');
         Route::get('notifications', [NotificationController::class, 'index'])->name('notifications');
         Route::post('notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
