@@ -224,7 +224,8 @@
 @media (max-width: 767px) {
     [data-sonner-toaster][data-y-position="bottom"] {
         bottom: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
-        --offset: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
+        --mobile-offset-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+        --offset-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
     }
 }
 

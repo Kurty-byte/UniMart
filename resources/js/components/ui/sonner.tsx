@@ -3,7 +3,7 @@ import { useFlashToast } from '@/hooks/use-flash-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Toaster as Sonner, type ToasterProps } from 'sonner';
 
-function Toaster({ position, offset, ...props }: ToasterProps) {
+function Toaster({ position, offset, mobileOffset, ...props }: ToasterProps) {
     const { appearance } = useAppearance();
     const isMobile = useIsMobile();
 
@@ -17,15 +17,25 @@ function Toaster({ position, offset, ...props }: ToasterProps) {
             offset={
                 offset ??
                 (isMobile
-                    ? 'calc(5.5rem + env(safe-area-inset-bottom, 0px))'
+                    ? {
+                          bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))',
+                          left: '16px',
+                          right: '16px',
+                      }
                     : undefined)
+            }
+            mobileOffset={
+                mobileOffset ?? {
+                    bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))',
+                    left: '16px',
+                    right: '16px',
+                }
             }
             style={
                 {
                     '--normal-bg': 'var(--popover)',
                     '--normal-text': 'var(--popover-foreground)',
                     '--normal-border': 'var(--border)',
-                    '--offset': isMobile ? 'calc(5.5rem + env(safe-area-inset-bottom, 0px))' : undefined,
                     zIndex: 9999,
                 } as React.CSSProperties
             }
