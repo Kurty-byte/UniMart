@@ -4,6 +4,7 @@ use App\Actions\Cart\RefreshCartHold;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\EwalletQrController;
+use App\Http\Controllers\Staff\ClaimController;
 use App\Http\Controllers\Staff\DrawerCountController;
 use App\Http\Controllers\Staff\DropoffController;
 use App\Http\Controllers\Staff\ScanController;
@@ -40,9 +41,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('drop-offs/{item}/approve', [DropoffController::class, 'approve'])->name('drop-offs.approve');
         Route::post('drop-offs/{item}/reject', [DropoffController::class, 'reject'])->name('drop-offs.reject');
         Route::get('drop-offs/{item}/tag', [DropoffController::class, 'tag'])->name('drop-offs.tag');
-        Route::inertia('claims', 'staff/claims')->name('claims');
+        Route::get('claims', [ClaimController::class, 'index'])->name('claims');
         Route::inertia('returns', 'staff/returns')->name('returns');
         Route::middleware('shift.open')->group(function () {
+            Route::post('claims/{order}/complete', [ClaimController::class, 'complete'])->name('claims.complete');
             Route::inertia('payouts', 'staff/payouts')->name('payouts');
         });
         Route::get('drawer-count', [DrawerCountController::class, 'index'])->name('drawer-count');
