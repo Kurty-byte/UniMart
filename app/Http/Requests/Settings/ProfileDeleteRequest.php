@@ -21,4 +21,19 @@ class ProfileDeleteRequest extends FormRequest
             'password' => $this->currentPasswordRules(),
         ];
     }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator(\Illuminate\Validation\Validator $validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($this->user()?->hasMarketplaceHistory()) {
+                $validator->errors()->add(
+                    'password',
+                    'Accounts with marketplace history cannot be deleted. Please contact a UniMart admin.'
+                );
+            }
+        });
+    }
 }

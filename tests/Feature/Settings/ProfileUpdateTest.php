@@ -83,3 +83,20 @@ test('correct password must be provided to delete account', function () {
 
     expect($user->fresh())->not->toBeNull();
 });
+
+test('user with listings cannot delete their account', function () {
+    $user = User::factory()->student()->create();
+    \App\Models\Item::factory()->for($user, 'seller')->create();
+
+    $this->actingAs($user)
+        ->delete(route('profile.destroy'), ['password' => 'password'])
+        ->assertSessionHasErrors('password');
+
+    expect($user->fresh())->not->toBeNull();
+});
+
+test('deleting a category with items is blocked at the database level', function () {
+    $item = \App\Models\Item::factory()->create();
+
+    expect(fn () => $item->category->delete())->toThrow(\Illuminate\Database\QueryException::class);
+});
