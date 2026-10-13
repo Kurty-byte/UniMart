@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\EwalletQrController;
 use App\Http\Controllers\Student\ListingController;
 use Illuminate\Support\Facades\Route;
@@ -33,7 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin Routes (Oversight & Management)
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::inertia('inventory', 'admin/inventory')->name('inventory');
-        Route::inertia('categories', 'admin/categories')->name('categories');
+        Route::get('categories', [CategoryController::class, 'index'])->name('categories');
+        Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::put('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
         Route::inertia('users', 'admin/users')->name('users');
         Route::inertia('finances', 'admin/finances')->name('finances');
         Route::inertia('shift-audits', 'admin/shift-audits')->name('shift-audits');
