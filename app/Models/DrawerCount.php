@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\DrawerCountFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,7 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable([
     'staff_id',
+    'opening_cash',
     'shift_started_at',
     'shift_ended_at',
     'expected_cash',
@@ -41,6 +43,7 @@ class DrawerCount extends Model
     protected function casts(): array
     {
         return [
+            'opening_cash' => 'decimal:2',
             'shift_started_at' => 'datetime',
             'shift_ended_at' => 'datetime',
             'expected_cash' => 'decimal:2',
@@ -56,5 +59,16 @@ class DrawerCount extends Model
     public function staff(): BelongsTo
     {
         return $this->belongsTo(User::class, 'staff_id');
+    }
+
+    /**
+     * Scope query to currently open shifts.
+     *
+     * @param  Builder<$this>  $query
+     * @return Builder<$this>
+     */
+    public function scopeOpen(Builder $query): Builder
+    {
+        return $query->whereNull('shift_ended_at');
     }
 }
