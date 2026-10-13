@@ -5,6 +5,7 @@ use App\Enums\OrderStatus;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\EwalletQrController;
 use App\Http\Controllers\Staff\DrawerCountController;
+use App\Http\Controllers\Staff\ScanController;
 use App\Http\Controllers\Student\CartController;
 use App\Http\Controllers\Student\CatalogController;
 use App\Http\Controllers\Student\ListingController;
@@ -32,7 +33,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Staff Routes (Desk Operations - accessible by Staff and Admins)
     Route::middleware('role:staff|admin')->prefix('staff')->name('staff.')->group(function () {
-        Route::inertia('scan', 'staff/scan')->name('scan');
+        Route::get('scan', [ScanController::class, 'index'])->name('scan');
+        Route::post('scan/resolve', [ScanController::class, 'resolve'])->name('scan.resolve');
         Route::inertia('drop-offs', 'staff/drop-offs')->name('drop-offs');
         Route::inertia('claims', 'staff/claims')->name('claims');
         Route::inertia('returns', 'staff/returns')->name('returns');

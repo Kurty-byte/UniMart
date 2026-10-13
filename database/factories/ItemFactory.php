@@ -59,4 +59,14 @@ class ItemFactory extends Factory
             'status' => ItemStatus::Sold,
         ]);
     }
+
+    /**
+     * Indicate that the item is expired.
+     */
+    public function expired(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => ItemStatus::Expired,
+        ]);
+    }
 }
