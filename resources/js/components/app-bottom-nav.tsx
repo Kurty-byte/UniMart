@@ -218,7 +218,6 @@ export function AppBottomNav() {
                                 <div className="flex items-center gap-3">
                                     <UserInfo user={auth.user} showEmail={true} />
                                 </div>
-                                {isStudent && (
                                     <Link
                                         href={editProfile()}
                                         onClick={handleNavigate}
@@ -227,7 +226,6 @@ export function AppBottomNav() {
                                     >
                                         View
                                     </Link>
-                                )}
                             </div>
                         )}
 
