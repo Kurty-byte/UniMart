@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('unimart:release-expired-carts')->everyMinute();
 Schedule::command('unimart:expire-hard-holds')->everyMinute();
+Schedule::command('unimart:expire-shelf-items')->hourly();
