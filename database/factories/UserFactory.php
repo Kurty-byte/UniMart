@@ -33,6 +33,8 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
+            'ewallet_qr_code' => null,
+            'suspended_at' => null,
         ];
     }
 
@@ -56,5 +58,46 @@ class UserFactory extends Factory
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),
         ]);
+    }
+
+    /**
+     * Indicate that the user is suspended.
+     */
+    public function suspended(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'suspended_at' => now(),
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a student.
+     */
+    public function student(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole('student');
+        });
+    }
+
+    /**
+     * Indicate that the user is a staff member with direct operational permissions.
+     */
+    public function staff(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole('staff');
+            $user->givePermissionTo(\App\Enums\StaffPermission::values());
+        });
+    }
+
+    /**
+     * Indicate that the user is an admin.
+     */
+    public function admin(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole('admin');
+        });
     }
 }

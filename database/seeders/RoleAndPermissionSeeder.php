@@ -53,11 +53,6 @@ class RoleAndPermissionSeeder extends Seeder
         $staffRole->givePermissionTo(Permission::whereIn('name', [
             'access staff portal',
             'scan qr codes',
-            'process dropoffs',
-            'process claims',
-            'process returns',
-            'process payouts',
-            'submit drawer counts',
         ])->get());
 
         $adminRole = Role::create(['name' => 'admin']);

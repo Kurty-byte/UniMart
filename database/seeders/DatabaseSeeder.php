@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'staff@unimart.test',
         ]);
         $staff->assignRole('staff');
+        $staff->givePermissionTo(\App\Enums\StaffPermission::values());
 
         // Create Student User 1
         $student1 = User::factory()->create([
