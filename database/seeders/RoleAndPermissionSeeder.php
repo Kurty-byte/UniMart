@@ -86,6 +86,8 @@ class RoleAndPermissionSeeder extends Seeder
             Permission::findOrCreate($permission, 'web');
         }
 
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
         // Create Roles and assign created permissions
         $staffRole = Role::findOrCreate('staff', 'web');
         $staffRole->syncPermissions($staffBasePermissions);
