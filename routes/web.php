@@ -7,6 +7,7 @@ use App\Http\Controllers\EwalletQrController;
 use App\Http\Controllers\Staff\ClaimController;
 use App\Http\Controllers\Staff\DrawerCountController;
 use App\Http\Controllers\Staff\DropoffController;
+use App\Http\Controllers\Staff\PayoutController;
 use App\Http\Controllers\Staff\ReturnController;
 use App\Http\Controllers\Staff\ScanController;
 use App\Http\Controllers\Student\CartController;
@@ -45,9 +46,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('claims', [ClaimController::class, 'index'])->name('claims');
         Route::get('returns', [ReturnController::class, 'index'])->name('returns');
         Route::post('returns/{item}/retrieve', [ReturnController::class, 'retrieve'])->name('returns.retrieve');
+        Route::get('payouts', [PayoutController::class, 'index'])->name('payouts');
+        Route::post('payouts/{orderItem}/digital', [PayoutController::class, 'digital'])->name('payouts.digital');
+        Route::post('payouts/{orderItem}/hold', [PayoutController::class, 'hold'])->name('payouts.hold');
         Route::middleware('shift.open')->group(function () {
             Route::post('claims/{order}/complete', [ClaimController::class, 'complete'])->name('claims.complete');
-            Route::inertia('payouts', 'staff/payouts')->name('payouts');
+            Route::post('payouts/{orderItem}/release', [PayoutController::class, 'release'])->name('payouts.release');
         });
         Route::get('drawer-count', [DrawerCountController::class, 'index'])->name('drawer-count');
         Route::post('shifts/open', [DrawerCountController::class, 'open'])->name('shifts.open');
