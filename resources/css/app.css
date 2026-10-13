@@ -220,3 +220,11 @@
         @apply bg-background text-foreground;
     }
 }
+
+@media (max-width: 767px) {
+    [data-sonner-toaster][data-y-position="bottom"] {
+        bottom: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
+        --offset: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
+    }
+}
+
