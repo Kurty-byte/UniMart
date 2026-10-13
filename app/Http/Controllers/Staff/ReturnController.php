@@ -9,6 +9,7 @@ use App\Models\Item;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -66,6 +67,8 @@ class ReturnController extends Controller
      */
     public function retrieve(Request $request, Item $item, RetrieveExpiredItem $action): RedirectResponse
     {
+        Gate::authorize('retrieveReturn', $item);
+
         /** @var User $staff */
         $staff = $request->user();
 

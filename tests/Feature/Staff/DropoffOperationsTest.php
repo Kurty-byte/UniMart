@@ -74,3 +74,14 @@ it('returns printable tracking tag data', function () {
             'shelf_location' => 'Shelf-A01',
         ]);
 });
+
+it('forbids staff without item.dropoff.approve permission', function () {
+    $staff = User::factory()->create();
+    $staff->assignRole('staff');
+    $item = Item::factory()->pendingDropoff()->create();
+
+    $this->actingAs($staff)->post(route('staff.drop-offs.approve', $item), [
+        'shelf_location' => 'Shelf-B04',
+    ])->assertForbidden();
+});
+

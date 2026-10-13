@@ -12,7 +12,9 @@ class RejectDropoffRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('process dropoffs') ?? false;
+        $item = $this->route('item');
+
+        return $this->user()?->can('rejectDropoff', $item) ?? false;
     }
 
     /**

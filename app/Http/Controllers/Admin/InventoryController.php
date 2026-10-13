@@ -8,6 +8,7 @@ use App\Models\Item;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -57,6 +58,8 @@ class InventoryController extends Controller
      */
     public function takeDown(Request $request, Item $item, TakeDownItem $action): RedirectResponse
     {
+        Gate::authorize('takeDown', $item);
+
         /** @var User $admin */
         $admin = $request->user();
 

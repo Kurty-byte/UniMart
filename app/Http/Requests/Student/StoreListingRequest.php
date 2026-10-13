@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Student;
 
 use App\Enums\ItemCondition;
+use App\Models\Item;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -14,7 +15,7 @@ class StoreListingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('create listings') ?? false;
+        return $this->user()?->can('create', Item::class) ?? false;
     }
 
     /**

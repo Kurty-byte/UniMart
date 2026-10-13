@@ -10,11 +10,19 @@ use Illuminate\Auth\Access\Response;
 class ItemPolicy
 {
     /**
+     * Determine whether the user can view any items.
+     */
+    public function viewAny(?User $user): bool
+    {
+        return true;
+    }
+
+    /**
      * Determine whether the user can create listings.
      */
     public function create(User $user): bool
     {
-        return $user->can('create listings');
+        return $user->can('item.create');
     }
 
     /**
@@ -30,7 +38,7 @@ class ItemPolicy
      */
     public function update(User $user, Item $item): bool
     {
-        return $user->id === $item->seller_id && $item->status === ItemStatus::PendingDropoff;
+        return $user->can('item.update') && $user->id === $item->seller_id && $item->status === ItemStatus::PendingDropoff;
     }
 
     /**
@@ -38,7 +46,7 @@ class ItemPolicy
      */
     public function delete(User $user, Item $item): bool
     {
-        return $user->id === $item->seller_id && $item->status === ItemStatus::PendingDropoff;
+        return $user->can('item.delete') && $user->id === $item->seller_id && $item->status === ItemStatus::PendingDropoff;
     }
 
     /**
@@ -51,5 +59,37 @@ class ItemPolicy
         }
 
         return Response::denyAsNotFound();
+    }
+
+    /**
+     * Determine whether the user can approve a drop-off.
+     */
+    public function approveDropoff(User $user, Item $item): bool
+    {
+        return $user->can('item.dropoff.approve');
+    }
+
+    /**
+     * Determine whether the user can reject a drop-off.
+     */
+    public function rejectDropoff(User $user, Item $item): bool
+    {
+        return $user->can('item.dropoff.reject');
+    }
+
+    /**
+     * Determine whether the user can retrieve an expired item return.
+     */
+    public function retrieveReturn(User $user, Item $item): bool
+    {
+        return $user->can('item.return.retrieve');
+    }
+
+    /**
+     * Determine whether the user can take down an item.
+     */
+    public function takeDown(User $user, Item $item): bool
+    {
+        return $user->can('item.takedown');
     }
 }
