@@ -4,6 +4,7 @@ use App\Actions\Cart\RefreshCartHold;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\EwalletQrController;
+use App\Http\Controllers\Student\CartController;
 use App\Http\Controllers\Student\CatalogController;
 use App\Http\Controllers\Student\ListingController;
 use App\Http\Middleware\RefreshCartSoftHold;
@@ -53,7 +54,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:student', RefreshCartSoftHold::class])->prefix('student')->name('student.')->group(function () {
         Route::get('browse', [CatalogController::class, 'index'])->name('browse');
         Route::get('items/{item}', [CatalogController::class, 'show'])->name('items.show');
-        Route::inertia('cart', 'student/cart')->name('cart');
+        Route::get('cart', [CartController::class, 'show'])->name('cart');
+        Route::post('cart/items', [CartController::class, 'storeItem'])->name('cart.items.store');
+        Route::patch('cart/items/{orderItem}', [CartController::class, 'updateItem'])->name('cart.items.update');
+        Route::delete('cart/items/{orderItem}', [CartController::class, 'destroyItem'])->name('cart.items.destroy');
+        Route::delete('cart', [CartController::class, 'clear'])->name('cart.clear');
         Route::post('cart/heartbeat', function (Request $request, RefreshCartHold $refreshCartHold) {
             $user = $request->user();
             $cart = Order::query()
