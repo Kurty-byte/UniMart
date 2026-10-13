@@ -3,8 +3,10 @@
 use App\Actions\Cart\RefreshCartHold;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StaffManagementController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\EwalletQrController;
 use App\Http\Controllers\Staff\ClaimController;
 use App\Http\Controllers\Staff\DrawerCountController;
@@ -71,7 +73,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::put('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-        Route::inertia('users', 'admin/users')->name('users');
+        Route::get('users', [UserController::class, 'index'])->name('users');
+        Route::post('users/{user}/suspend', [UserController::class, 'suspend'])->name('users.suspend');
+        Route::post('users/{user}/unsuspend', [UserController::class, 'unsuspend'])->name('users.unsuspend');
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::post('reports/{report}/resolve', [ReportController::class, 'resolve'])->name('reports.resolve');
         Route::inertia('finances', 'admin/finances')->name('finances');
         Route::inertia('shift-audits', 'admin/shift-audits')->name('shift-audits');
         Route::get('settings', [SettingController::class, 'index'])->name('settings');
