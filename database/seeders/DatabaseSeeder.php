@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\StaffPermission;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,7 +16,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(RoleAndPermissionSeeder::class);
+        $this->call([
+            RoleAndPermissionSeeder::class,
+            CategorySeeder::class,
+        ]);
 
         // Create Admin User
         $admin = User::factory()->create([
@@ -30,7 +34,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'staff@unimart.test',
         ]);
         $staff->assignRole('staff');
-        $staff->givePermissionTo(\App\Enums\StaffPermission::values());
+        $staff->givePermissionTo(StaffPermission::values());
 
         // Create Student User 1
         $student1 = User::factory()->create([
