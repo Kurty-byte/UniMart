@@ -13,7 +13,9 @@ class HoldCashPayoutRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('process payouts') ?? false;
+        $orderItem = $this->route('orderItem');
+
+        return $this->user()?->can('holdPayout', $orderItem) ?? false;
     }
 
     /**

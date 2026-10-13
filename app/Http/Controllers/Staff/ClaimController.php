@@ -10,6 +10,7 @@ use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -62,6 +63,8 @@ class ClaimController extends Controller
      */
     public function complete(Request $request, Order $order, CompleteOrderHandover $action): RedirectResponse
     {
+        Gate::authorize('completeClaim', $order);
+
         /** @var User $staff */
         $staff = $request->user();
 

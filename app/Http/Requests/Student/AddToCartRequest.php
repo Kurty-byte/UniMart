@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Student;
 
+use App\Models\Order;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,7 @@ class AddToCartRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('buy items') ?? false;
+        return $this->user()?->can('create', Order::class) ?? false;
     }
 
     /**

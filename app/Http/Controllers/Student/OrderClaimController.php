@@ -11,6 +11,7 @@ use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -101,9 +102,7 @@ class OrderClaimController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        if ($order->buyer_id !== $user->id) {
-            abort(403);
-        }
+        Gate::authorize('cancel', $order);
 
         $action->handle($user, $order);
 

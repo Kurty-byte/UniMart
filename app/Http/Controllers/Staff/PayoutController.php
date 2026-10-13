@@ -12,6 +12,7 @@ use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -119,6 +120,8 @@ class PayoutController extends Controller
      */
     public function digital(Request $request, OrderItem $orderItem, DisburseDigitalPayout $action): RedirectResponse
     {
+        Gate::authorize('processPayout', $orderItem);
+
         /** @var User $staff */
         $staff = $request->user();
 
@@ -150,6 +153,8 @@ class PayoutController extends Controller
      */
     public function release(Request $request, OrderItem $orderItem, ReleaseCashPayout $action): RedirectResponse
     {
+        Gate::authorize('releasePayout', $orderItem);
+
         /** @var User $staff */
         $staff = $request->user();
 

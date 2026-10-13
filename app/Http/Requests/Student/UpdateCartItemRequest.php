@@ -14,7 +14,7 @@ class UpdateCartItemRequest extends FormRequest
     {
         $orderItem = $this->route('orderItem');
 
-        return $orderItem && $orderItem->order && $orderItem->order->buyer_id === $this->user()?->id;
+        return $this->user()?->can('update', $orderItem) ?? false;
     }
 
     /**
