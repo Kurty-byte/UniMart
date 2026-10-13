@@ -4,6 +4,7 @@ use App\Actions\Cart\RefreshCartHold;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\StaffManagementController;
 use App\Http\Controllers\EwalletQrController;
 use App\Http\Controllers\Staff\ClaimController;
 use App\Http\Controllers\Staff\DrawerCountController;
@@ -75,6 +76,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::inertia('shift-audits', 'admin/shift-audits')->name('shift-audits');
         Route::get('settings', [SettingController::class, 'index'])->name('settings');
         Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+        Route::get('staff', [StaffManagementController::class, 'index'])->name('staff.index');
+        Route::post('staff', [StaffManagementController::class, 'store'])->name('staff.store');
+        Route::put('staff/{user}/permissions', [StaffManagementController::class, 'updatePermissions'])->name('staff.permissions.update');
+        Route::delete('staff/{user}', [StaffManagementController::class, 'destroy'])->name('staff.revoke');
     });
 
     // Student Routes (Unified Seller and Buyer)
