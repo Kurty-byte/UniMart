@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\StaffPermission;
 use App\Models\User;
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -88,7 +88,7 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user) {
             $user->assignRole('staff');
-            $user->givePermissionTo(StaffPermission::values());
+            $user->givePermissionTo(RoleAndPermissionSeeder::STAFF_OPERATIONAL_PERMISSIONS);
         });
     }
 

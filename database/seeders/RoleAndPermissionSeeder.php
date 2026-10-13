@@ -10,6 +10,21 @@ use Spatie\Permission\PermissionRegistrar;
 class RoleAndPermissionSeeder extends Seeder
 {
     /**
+     * Operational permissions directly grantable to desk staff members.
+     *
+     * @var array<int, string>
+     */
+    public const STAFF_OPERATIONAL_PERMISSIONS = [
+        'item.dropoff.approve',
+        'item.dropoff.reject',
+        'item.return.retrieve',
+        'order.claim.complete',
+        'payout.process',
+        'drawer_count.open',
+        'drawer_count.close',
+    ];
+
+    /**
      * Run the database seeds.
      */
     public function run(): void
@@ -17,53 +32,68 @@ class RoleAndPermissionSeeder extends Seeder
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create Permissions
-        $permissions = [
-            // Staff / Desk Permissions
-            'access staff portal',
-            'scan qr codes',
-            'process dropoffs',
-            'process claims',
-            'process returns',
-            'process payouts',
-            'submit drawer counts',
-
-            // Admin / Management Permissions
-            'access admin portal',
-            'manage hub',
-            'manage inventory',
-            'manage categories',
-            'manage users',
-            'manage finances',
-            'audit shifts',
-
-            // Student Permissions
-            'create listings',
-            'manage own listings',
-            'browse catalog',
-            'buy items',
+        // 1. Staff Base & Operational Permissions
+        $staffBasePermissions = [
+            'portal.staff.access',
+            'qr.scan',
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+        // 2. Student Permissions
+        $studentPermissions = [
+            'item.view_any',
+            'item.view',
+            'item.create',
+            'item.update',
+            'item.delete',
+            'order.create',
+            'order.cancel',
+            'report.create',
+        ];
+
+        // 3. Admin-Only Management Permissions
+        $adminPermissions = [
+            'portal.admin.access',
+            'user.view_any',
+            'user.view',
+            'user.create',
+            'user.update',
+            'user.delete',
+            'user.suspend',
+            'user.permissions.update',
+            'category.create',
+            'category.update',
+            'category.delete',
+            'item.takedown',
+            'drawer_count.view_any',
+            'drawer_count.audit',
+            'report.view_any',
+            'report.resolve',
+            'setting.view_any',
+            'setting.update',
+            'payout.view_any',
+            'payout.hold',
+            'payout.release',
+        ];
+
+        $allPermissions = array_unique(array_merge(
+            $staffBasePermissions,
+            self::STAFF_OPERATIONAL_PERMISSIONS,
+            $studentPermissions,
+            $adminPermissions
+        ));
+
+        foreach ($allPermissions as $permission) {
+            Permission::findOrCreate($permission, 'web');
         }
 
         // Create Roles and assign created permissions
-        $staffRole = Role::create(['name' => 'staff']);
-        $staffRole->givePermissionTo(Permission::whereIn('name', [
-            'access staff portal',
-            'scan qr codes',
-        ])->get());
+        $staffRole = Role::findOrCreate('staff', 'web');
+        $staffRole->syncPermissions($staffBasePermissions);
 
-        $adminRole = Role::create(['name' => 'admin']);
-        $adminRole->givePermissionTo(Permission::all());
+        $studentRole = Role::findOrCreate('student', 'web');
+        $studentRole->syncPermissions($studentPermissions);
 
-        $studentRole = Role::create(['name' => 'student']);
-        $studentRole->givePermissionTo(Permission::whereIn('name', [
-            'create listings',
-            'manage own listings',
-            'browse catalog',
-            'buy items',
-        ])->get());
+        $adminRole = Role::findOrCreate('admin', 'web');
+        $adminRole->syncPermissions(Permission::all());
     }
 }

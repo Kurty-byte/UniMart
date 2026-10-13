@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\Admin\CreateStaffUser;
 use App\Actions\Admin\UpdateStaffPermissions;
 use App\Enums\HubEvent;
-use App\Enums\StaffPermission;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreStaffRequest;
 use App\Http\Requests\Admin\UpdateStaffPermissionsRequest;
 use App\Models\User;
 use App\Support\HubAudit;
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -38,7 +38,7 @@ class StaffManagementController extends Controller
 
         return Inertia::render('admin/staff', [
             'staffMembers' => $staffMembers,
-            'availablePermissions' => StaffPermission::values(),
+            'availablePermissions' => RoleAndPermissionSeeder::STAFF_OPERATIONAL_PERMISSIONS,
         ]);
     }
 
