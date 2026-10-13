@@ -22,6 +22,7 @@ enum HubEvent: string
     case StaffRoleRevoked = 'staff_role_revoked';
     case SettingsUpdated = 'settings_updated';
     case ReportResolved = 'report_resolved';
+    case ReportFiled = 'report_filed';
 
     /**
      * Get a human-readable description for the activity log.
@@ -47,6 +48,7 @@ enum HubEvent: string
             self::StaffRoleRevoked => 'Staff role revoked',
             self::SettingsUpdated => 'System settings updated',
             self::ReportResolved => 'Report resolved by administrator',
+            self::ReportFiled => 'Student filed a dispute report',
         };
     }
 }

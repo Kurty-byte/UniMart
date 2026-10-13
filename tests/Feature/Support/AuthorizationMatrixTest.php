@@ -7,6 +7,7 @@ dataset('rbac_matrix', [
     ['GET', 'student.browse', ['student'], ['staff']],
     ['GET', 'student.cart', ['student'], ['staff']],
     ['GET', 'student.listings.index', ['student'], ['staff']],
+    ['GET', 'student.reports.index', ['student'], ['staff']],
 
     // Staff endpoints: staff and admin
     ['GET', 'staff.scan', ['staff', 'admin'], ['student']],
