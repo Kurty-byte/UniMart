@@ -14,6 +14,7 @@ use App\Http\Controllers\Student\CartController;
 use App\Http\Controllers\Student\CatalogController;
 use App\Http\Controllers\Student\ListingController;
 use App\Http\Controllers\Student\MessageController;
+use App\Http\Controllers\Student\NotificationController;
 use App\Http\Controllers\Student\OrderClaimController;
 use App\Http\Controllers\Student\PayoutController as StudentPayoutController;
 use App\Http\Controllers\Student\SalesController;
@@ -120,6 +121,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('messages', [MessageController::class, 'index'])->name('messages');
         Route::post('messages', [MessageController::class, 'store'])->name('messages.store');
         Route::post('messages/{item}/{user}/read', [MessageController::class, 'read'])->name('messages.read');
+        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications');
+        Route::post('notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
+        Route::post('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
         Route::redirect('profile', '/settings/profile')->name('profile');
     });
 
