@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Enums\ItemStatus;
 use App\Models\Item;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
 class ItemPolicy
 {
@@ -38,5 +39,17 @@ class ItemPolicy
     public function delete(User $user, Item $item): bool
     {
         return $user->id === $item->seller_id && $item->status === ItemStatus::PendingDropoff;
+    }
+
+    /**
+     * Determine whether the user can view the item in the catalog.
+     */
+    public function viewInCatalog(User $user, Item $item): Response
+    {
+        if ($item->isInCatalog() || $item->seller_id === $user->id) {
+            return Response::allow();
+        }
+
+        return Response::denyAsNotFound();
     }
 }

@@ -47,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Student Routes (Unified Seller and Buyer)
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
         Route::get('browse', [CatalogController::class, 'index'])->name('browse');
+        Route::get('items/{item}', [CatalogController::class, 'show'])->name('items.show');
         Route::inertia('cart', 'student/cart')->name('cart');
         Route::inertia('saved', 'student/saved')->name('saved');
 

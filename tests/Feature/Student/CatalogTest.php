@@ -102,3 +102,36 @@ it('rejects invalid filters', function (array $query, string $field) {
     'max_price less than min_price' => [['min_price' => 500, 'max_price' => 100], 'max_price'],
     'invalid category' => [['category' => 999999], 'category'],
 ]);
+
+it('shows a catalog item on the detail page', function () {
+    $item = Item::factory()->create();
+
+    $this->actingAs(User::factory()->student()->create())
+        ->get(route('student.items.show', $item))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('student/items/show')
+            ->where('item.id', $item->id)
+            ->where('canAddToCart', true)
+            ->where('isOwn', false)
+            ->where('inCartQuantity', 0));
+});
+
+it('returns 404 for items not in the catalog when viewed by other students', function () {
+    $item = Item::factory()->pendingDropoff()->create();
+
+    $this->actingAs(User::factory()->student()->create())
+        ->get(route('student.items.show', $item))
+        ->assertNotFound();
+});
+
+it('lets the seller view their reserved-out or sold item on the detail page', function () {
+    $item = Item::factory()->create(['quantity' => 0]);
+
+    $this->actingAs($item->seller->assignRole('student'))
+        ->get(route('student.items.show', $item))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('student/items/show')
+            ->where('item.id', $item->id)
+            ->where('isOwn', true)
+            ->where('canAddToCart', false));
+});

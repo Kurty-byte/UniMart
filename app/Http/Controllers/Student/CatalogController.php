@@ -9,6 +9,8 @@ use App\Models\Category;
 use App\Models\Item;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -112,6 +114,46 @@ class CatalogController extends Controller
                 'max_price' => $validated['max_price'] ?? null,
                 'sort' => $sort,
             ],
+        ]);
+    }
+
+    /**
+     * Display the catalog item details.
+     */
+    public function show(Request $request, Item $item): Response
+    {
+        Gate::authorize('viewInCatalog', $item);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        $item->loadMissing(['category:id,name', 'seller:id,name']);
+
+        $isOwn = $item->seller_id === $user->id;
+        $canAddToCart = ! $isOwn && $item->isInCatalog();
+
+        return Inertia::render('student/items/show', [
+            'item' => [
+                'id' => $item->id,
+                'title' => $item->title,
+                'description' => $item->description,
+                'condition' => $item->condition->value,
+                'price' => $item->price,
+                'quantity' => $item->quantity,
+                'image_urls' => $item->image_urls,
+                'category' => $item->category ? [
+                    'id' => $item->category->id,
+                    'name' => $item->category->name,
+                ] : null,
+                'seller' => $item->seller ? [
+                    'id' => $item->seller->id,
+                    'name' => $item->seller->name,
+                ] : null,
+                'shelf_expires_at' => $item->shelfExpiresAt()?->toISOString(),
+            ],
+            'isOwn' => $isOwn,
+            'canAddToCart' => $canAddToCart,
+            'inCartQuantity' => 0,
         ]);
     }
 }
