@@ -4,6 +4,7 @@ use App\Actions\Cart\RefreshCartHold;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\EwalletQrController;
+use App\Http\Controllers\Staff\DrawerCountController;
 use App\Http\Controllers\Student\CartController;
 use App\Http\Controllers\Student\CatalogController;
 use App\Http\Controllers\Student\ListingController;
@@ -35,8 +36,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::inertia('drop-offs', 'staff/drop-offs')->name('drop-offs');
         Route::inertia('claims', 'staff/claims')->name('claims');
         Route::inertia('returns', 'staff/returns')->name('returns');
-        Route::inertia('payouts', 'staff/payouts')->name('payouts');
-        Route::inertia('drawer-count', 'staff/drawer-count')->name('drawer-count');
+        Route::middleware('shift.open')->group(function () {
+            Route::inertia('payouts', 'staff/payouts')->name('payouts');
+        });
+        Route::get('drawer-count', [DrawerCountController::class, 'index'])->name('drawer-count');
+        Route::post('shifts/open', [DrawerCountController::class, 'open'])->name('shifts.open');
+        Route::post('shifts/close', [DrawerCountController::class, 'close'])->name('shifts.close');
     });
 
     // Admin Routes (Oversight & Management)
