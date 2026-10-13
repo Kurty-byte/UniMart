@@ -93,4 +93,20 @@ class OrderItem extends Model
     {
         return $this->belongsTo(User::class, 'paid_by');
     }
+
+    /**
+     * Get the seller of the underlying item.
+     */
+    public function seller(): ?User
+    {
+        return $this->item?->seller;
+    }
+
+    /**
+     * Get the calculated total amount for this order item.
+     */
+    public function totalAmount(): string
+    {
+        return number_format((float) $this->price * (int) $this->quantity, 2, '.', '');
+    }
 }
