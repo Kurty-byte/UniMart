@@ -54,6 +54,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::inertia('messages', 'student/messages')->name('messages');
         Route::redirect('profile', '/settings/profile')->name('profile');
     });
+
+    Route::get('users/{user}/ewallet-qr', [\App\Http\Controllers\EwalletQrController::class, 'show'])
+        ->name('users.ewallet-qr.show');
 });
 
 require __DIR__.'/settings.php';

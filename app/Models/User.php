@@ -73,6 +73,22 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Determine if the user has uploaded an e-wallet QR code.
+     */
+    public function hasEwalletQr(): bool
+    {
+        return $this->ewallet_qr_code !== null;
+    }
+
+    /**
+     * Get the private streaming URL for the user's e-wallet QR code.
+     */
+    public function ewalletQrUrl(): ?string
+    {
+        return $this->hasEwalletQr() ? route('users.ewallet-qr.show', $this) : null;
+    }
+
+    /**
      * Get the items listed for sale by the user.
      *
      * @return HasMany<Item, $this>
