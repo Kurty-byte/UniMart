@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Enums\SettingKey;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -106,5 +107,36 @@ class Order extends Model
         return $this->belongsToMany(Item::class, 'order_items')
             ->withPivot(['quantity', 'price', 'payout_status', 'paid_by', 'paid_at'])
             ->withTimestamps();
+    }
+
+    /**
+     * Find or create the active cart order for the given buyer.
+     */
+    public static function findOrCreateCart(User $buyer): self
+    {
+        $minutes = Setting::integer(SettingKey::CartSoftHoldMinutes, 15);
+
+        return static::firstOrCreate(
+            [
+                'buyer_id' => $buyer->id,
+                'status' => OrderStatus::Cart,
+            ],
+            [
+                'total_price' => '0.00',
+                'expires_at' => now()->addMinutes($minutes),
+            ]
+        );
+    }
+
+    /**
+     * Recalculate and update the order total price from its order items.
+     */
+    public function recalculateTotal(): void
+    {
+        $total = $this->orderItems()
+            ->selectRaw('COALESCE(SUM(quantity * price), 0) as total')
+            ->value('total') ?? '0.00';
+
+        $this->update(['total_price' => (string) number_format((float) $total, 2, '.', '')]);
     }
 }
