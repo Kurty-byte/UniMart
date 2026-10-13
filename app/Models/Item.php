@@ -4,8 +4,12 @@ namespace App\Models;
 
 use App\Enums\ItemCondition;
 use App\Enums\ItemStatus;
+use App\Enums\SettingKey;
+use Carbon\CarbonImmutable;
 use Database\Factories\ItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -143,5 +148,47 @@ class Item extends Model
     public function reports(): HasMany
     {
         return $this->hasMany(Report::class, 'item_id');
+    }
+
+    /**
+     * Scope the query to items owned by the given user.
+     *
+     * @param  Builder<$this>  $query
+     * @return Builder<$this>
+     */
+    public function scopeOwnedBy(Builder $query, User $user): Builder
+    {
+        return $query->where('seller_id', $user->id);
+    }
+
+    /**
+     * Get public URLs for the item images.
+     *
+     * @return Attribute<array<string>, never>
+     */
+    protected function imageUrls(): Attribute
+    {
+        return Attribute::get(function (): array {
+            $images = $this->images ?? [];
+
+            return array_map(
+                static fn (string $path): string => Storage::disk('public')->url($path),
+                $images
+            );
+        });
+    }
+
+    /**
+     * Get the timestamp when the item shelf life expires, if dropped off.
+     */
+    public function shelfExpiresAt(): ?CarbonImmutable
+    {
+        if ($this->dropped_off_at === null) {
+            return null;
+        }
+
+        $days = Setting::integer(SettingKey::ItemShelfExpiryDays, 30);
+
+        return $this->dropped_off_at->toImmutable()->addDays($days);
     }
 }

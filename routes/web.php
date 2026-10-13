@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\EwalletQrController;
+use App\Http\Controllers\Student\ListingController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -44,7 +46,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::inertia('saved', 'student/saved')->name('saved');
 
         Route::inertia('listings', 'student/listings/index')->name('listings.index');
-        Route::inertia('listings/create', 'student/listings/create')->name('listings.create');
+        Route::get('listings/create', [ListingController::class, 'create'])->name('listings.create');
+        Route::post('listings', [ListingController::class, 'store'])->name('listings.store');
+        Route::get('listings/{item}', [ListingController::class, 'show'])->name('listings.show');
 
         Route::inertia('claims', 'student/claims')->name('claims');
         Route::inertia('sales', 'student/sales')->name('sales');
@@ -55,7 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::redirect('profile', '/settings/profile')->name('profile');
     });
 
-    Route::get('users/{user}/ewallet-qr', [\App\Http\Controllers\EwalletQrController::class, 'show'])
+    Route::get('users/{user}/ewallet-qr', [EwalletQrController::class, 'show'])
         ->name('users.ewallet-qr.show');
 });
 
