@@ -7,6 +7,7 @@ use App\Actions\Payouts\HoldCashPayout;
 use App\Actions\Payouts\ReleaseCashPayout;
 use App\Enums\PayoutStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Staff\HoldCashPayoutRequest;
 use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +24,7 @@ class PayoutController extends Controller
     {
         $pendingPayouts = OrderItem::query()
             ->where('payout_status', PayoutStatus::Pending)
-            ->with(['item.seller:id,name,email,ewallet_qr_code', 'order:id,buyer_id,completed_at'])
+            ->with(['item.seller:id,name,email,ewallet_qr_code,ewallet_provider,ewallet_account_name,ewallet_account_number', 'order:id,buyer_id,completed_at'])
             ->latest('id')
             ->get()
             ->map(fn (OrderItem $oi) => [
@@ -40,6 +41,9 @@ class PayoutController extends Controller
                     'id' => $oi->item->seller->id,
                     'name' => $oi->item->seller->name,
                     'email' => $oi->item->seller->email,
+                    'ewallet_provider' => $oi->item->seller->ewallet_provider,
+                    'ewallet_account_name' => $oi->item->seller->ewallet_account_name,
+                    'ewallet_account_number' => $oi->item->seller->ewallet_account_number,
                     'has_ewallet_qr' => $oi->item->seller->ewallet_qr_code !== null,
                     'ewallet_qr_url' => $oi->item->seller->ewallet_qr_code !== null
                         ? route('users.ewallet-qr.show', $oi->item->seller)
@@ -61,6 +65,9 @@ class PayoutController extends Controller
                 'quantity' => $oi->quantity,
                 'price' => $oi->price,
                 'total_amount' => $oi->totalAmount(),
+                'payout_hold_reason' => $oi->payout_hold_reason?->value,
+                'payout_hold_reason_label' => $oi->payout_hold_reason?->label(),
+                'payout_note' => $oi->payout_note,
                 'item' => $oi->item ? [
                     'id' => $oi->item->id,
                     'title' => $oi->item->title,
@@ -123,12 +130,17 @@ class PayoutController extends Controller
     /**
      * Hold payout for physical cash pickup.
      */
-    public function hold(Request $request, OrderItem $orderItem, HoldCashPayout $action): RedirectResponse
+    public function hold(HoldCashPayoutRequest $request, OrderItem $orderItem, HoldCashPayout $action): RedirectResponse
     {
         /** @var User $staff */
         $staff = $request->user();
 
-        $action->handle($staff, $orderItem);
+        $action->handle(
+            $staff,
+            $orderItem,
+            $request->input('reason'),
+            $request->input('note')
+        );
 
         return redirect()->back();
     }

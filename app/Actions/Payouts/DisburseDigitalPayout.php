@@ -27,9 +27,9 @@ class DisburseDigitalPayout
         $orderItem->loadMissing('item.seller');
         $seller = $orderItem->seller();
 
-        if (! $seller || ! $seller->ewallet_qr_code) {
+        if (! $seller || (! $seller->ewallet_qr_code && empty($seller->ewallet_account_number))) {
             throw ValidationException::withMessages([
-                'seller' => ['Seller has not uploaded an e-wallet QR code.'],
+                'seller' => ['Seller has not uploaded an e-wallet QR code or account details.'],
             ]);
         }
 

@@ -57,6 +57,9 @@ class PayoutController extends Controller
                 'price' => $oi->price,
                 'total_amount' => $oi->totalAmount(),
                 'payout_status' => $oi->payout_status->value,
+                'payout_hold_reason' => $oi->payout_hold_reason?->value,
+                'payout_hold_reason_label' => $oi->payout_hold_reason?->label(),
+                'payout_note' => $oi->payout_note,
                 'paid_at' => $oi->paid_at?->toISOString(),
                 'paid_by' => $oi->paidBy ? [
                     'id' => $oi->paidBy->id,

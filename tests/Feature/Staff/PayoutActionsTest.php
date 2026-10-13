@@ -49,6 +49,30 @@ it('refuses digital payout if seller has no e-wallet QR code', function () {
         ->toThrow(ValidationException::class);
 });
 
+it('disburses payout digitally if seller has mobile number even without QR code image', function () {
+    Notification::fake();
+    $staff = User::factory()->staff()->create();
+    $seller = User::factory()->student()->create([
+        'ewallet_qr_code' => null,
+        'ewallet_provider' => 'gcash',
+        'ewallet_account_number' => '09171234567',
+    ]);
+    $item = Item::factory()->for($seller, 'seller')->create();
+    $orderItem = OrderItem::factory()->for($item)->create([
+        'payout_status' => PayoutStatus::Pending,
+        'price' => 250.00,
+        'quantity' => 1,
+    ]);
+
+    app(DisburseDigitalPayout::class)->handle($staff, $orderItem);
+
+    expect($orderItem->fresh()->payout_status)->toBe(PayoutStatus::PaidDigitally)
+        ->and($orderItem->fresh()->paid_by)->toBe($staff->id)
+        ->and($orderItem->fresh()->paid_at)->not->toBeNull();
+
+    Notification::assertSentTo($seller, DigitalPayoutDisbursedNotification::class);
+});
+
 it('holds payout for cash and notifies seller', function () {
     Notification::fake();
     $staff = User::factory()->staff()->create();
