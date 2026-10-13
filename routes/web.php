@@ -5,6 +5,7 @@ use App\Enums\OrderStatus;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\EwalletQrController;
 use App\Http\Controllers\Staff\DrawerCountController;
+use App\Http\Controllers\Staff\DropoffController;
 use App\Http\Controllers\Staff\ScanController;
 use App\Http\Controllers\Student\CartController;
 use App\Http\Controllers\Student\CatalogController;
@@ -35,7 +36,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:staff|admin')->prefix('staff')->name('staff.')->group(function () {
         Route::get('scan', [ScanController::class, 'index'])->name('scan');
         Route::post('scan/resolve', [ScanController::class, 'resolve'])->name('scan.resolve');
-        Route::inertia('drop-offs', 'staff/drop-offs')->name('drop-offs');
+        Route::get('drop-offs', [DropoffController::class, 'index'])->name('drop-offs');
+        Route::post('drop-offs/{item}/approve', [DropoffController::class, 'approve'])->name('drop-offs.approve');
+        Route::post('drop-offs/{item}/reject', [DropoffController::class, 'reject'])->name('drop-offs.reject');
+        Route::get('drop-offs/{item}/tag', [DropoffController::class, 'tag'])->name('drop-offs.tag');
         Route::inertia('claims', 'staff/claims')->name('claims');
         Route::inertia('returns', 'staff/returns')->name('returns');
         Route::middleware('shift.open')->group(function () {
