@@ -129,3 +129,30 @@ it('forbids staff from managing categories', function () {
         ->post(route('admin.categories.store'), ['name' => 'Restricted Category'])
         ->assertForbidden();
 });
+
+it('forbids users without category.create permission from creating categories', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('admin.categories.store'), ['name' => 'Unauthorized Category'])
+        ->assertForbidden();
+});
+
+it('forbids users without category.update permission from updating categories', function () {
+    $category = Category::factory()->create();
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->put(route('admin.categories.update', $category), ['name' => 'New Name'])
+        ->assertForbidden();
+});
+
+it('forbids users without category.delete permission from deleting categories', function () {
+    $category = Category::factory()->create();
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->delete(route('admin.categories.destroy', $category))
+        ->assertForbidden();
+});
+

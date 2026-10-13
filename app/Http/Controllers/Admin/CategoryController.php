@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -65,6 +66,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category): RedirectResponse
     {
+        Gate::authorize('delete', $category);
+
         if ($category->children()->exists()) {
             throw ValidationException::withMessages([
                 'category' => ['Remove or move its items and sub-categories first.'],
