@@ -9,7 +9,6 @@ use App\Enums\OrderStatus;
 use App\Enums\PayoutStatus;
 use App\Enums\ReportStatus;
 use App\Enums\SettingKey;
-use App\Enums\StaffPermission;
 use App\Models\Category;
 use App\Models\DrawerCount;
 use App\Models\Item;
@@ -58,7 +57,7 @@ class DemoMarketplaceSeeder extends Seeder
             ]
         );
         $staff->syncRoles(['staff']);
-        $staff->givePermissionTo(StaffPermission::values());
+        $staff->givePermissionTo(RoleAndPermissionSeeder::STAFF_OPERATIONAL_PERMISSIONS);
 
         $student1 = User::firstOrCreate(
             ['email' => 'student1@unimart.test'],
