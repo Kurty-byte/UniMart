@@ -38,7 +38,7 @@ trait ProfileValidationRules
      */
     protected function emailRules(?int $userId = null): array
     {
-        return [
+        $rules = [
             'required',
             'string',
             'email',
@@ -47,5 +47,19 @@ trait ProfileValidationRules
                 ? Rule::unique(User::class)
                 : Rule::unique(User::class)->ignore($userId),
         ];
+
+        $allowedDomains = config('unimart.allowed_email_domains', []);
+        if (! empty($allowedDomains)) {
+            $rules[] = function (string $attribute, mixed $value, \Closure $fail) use ($allowedDomains): void {
+                $parts = explode('@', (string) $value);
+                $domain = strtolower(end($parts));
+
+                if (! in_array($domain, $allowedDomains, true)) {
+                    $fail('Please use your university email address.');
+                }
+            };
+        }
+
+        return $rules;
     }
 }
