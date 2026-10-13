@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('unimart:release-expired-carts')->everyMinute();
+Schedule::command('unimart:expire-hard-holds')->everyMinute();
