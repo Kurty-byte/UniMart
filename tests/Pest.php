@@ -14,8 +14,11 @@ use Tests\TestCase;
 |
 */
 
+use Database\Seeders\RoleAndPermissionSeeder;
+
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
+    ->beforeEach(fn () => $this->seed(RoleAndPermissionSeeder::class))
     ->in('Feature');
 
 /*
