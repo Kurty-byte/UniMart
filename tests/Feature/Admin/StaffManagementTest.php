@@ -13,14 +13,14 @@ it('creates a new staff member with assigned permissions', function () {
         'email' => 'jane.desk@university.edu.ph',
         'password' => 'password123',
         'password_confirmation' => 'password123',
-        'permissions' => ['process dropoffs', 'scan qr codes'],
+        'permissions' => ['item.dropoff.approve', 'qr.scan'],
     ])->assertRedirect();
 
     $staff = User::where('email', 'jane.desk@university.edu.ph')->first();
     expect($staff)->not->toBeNull()
         ->and($staff->hasRole('staff'))->toBeTrue()
-        ->and($staff->can('process dropoffs'))->toBeTrue()
-        ->and($staff->can('process payouts'))->toBeFalse();
+        ->and($staff->can('item.dropoff.approve'))->toBeTrue()
+        ->and($staff->can('payout.process'))->toBeFalse();
 
     $activity = Activity::inLog('hub')->where('event', HubEvent::StaffAccountCreated->value)->first();
     expect($activity)->not->toBeNull()
@@ -30,14 +30,14 @@ it('creates a new staff member with assigned permissions', function () {
 it('updates operational permissions for an existing staff member', function () {
     $admin = User::factory()->admin()->create();
     $staff = User::factory()->staff()->create();
-    $staff->givePermissionTo('process payouts');
+    $staff->givePermissionTo('payout.process');
 
     $this->actingAs($admin)->put(route('admin.staff.permissions.update', $staff), [
-        'permissions' => ['process dropoffs'],
+        'permissions' => ['item.dropoff.approve'],
     ])->assertRedirect();
 
-    expect($staff->fresh()->can('process payouts'))->toBeFalse()
-        ->and($staff->fresh()->can('process dropoffs'))->toBeTrue();
+    expect($staff->fresh()->can('payout.process'))->toBeFalse()
+        ->and($staff->fresh()->can('item.dropoff.approve'))->toBeTrue();
 
     $activity = Activity::inLog('hub')->where('event', HubEvent::StaffPermissionsUpdated->value)->first();
     expect($activity)->not->toBeNull()
@@ -47,13 +47,13 @@ it('updates operational permissions for an existing staff member', function () {
 it('revokes staff role and direct permissions', function () {
     $admin = User::factory()->admin()->create();
     $staff = User::factory()->staff()->create();
-    $staff->givePermissionTo('process dropoffs');
+    $staff->givePermissionTo('item.dropoff.approve');
 
     $this->actingAs($admin)->delete(route('admin.staff.revoke', $staff))
         ->assertRedirect();
 
     expect($staff->fresh()->hasRole('staff'))->toBeFalse()
-        ->and($staff->fresh()->can('process dropoffs'))->toBeFalse();
+        ->and($staff->fresh()->can('item.dropoff.approve'))->toBeFalse();
 
     $activity = Activity::inLog('hub')->where('event', HubEvent::StaffRoleRevoked->value)->first();
     expect($activity)->not->toBeNull()
