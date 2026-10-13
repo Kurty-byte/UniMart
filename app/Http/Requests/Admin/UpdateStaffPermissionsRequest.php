@@ -12,7 +12,9 @@ class UpdateStaffPermissionsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->hasRole('admin') ?? false;
+        $targetUser = $this->route('user');
+
+        return $this->user()?->can('updatePermissions', $targetUser) ?? false;
     }
 
     /**
