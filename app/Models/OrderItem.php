@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PayoutHoldReason;
 use App\Enums\PayoutStatus;
 use Database\Factories\OrderItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -19,6 +20,8 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property int $quantity
  * @property numeric-string $price
  * @property PayoutStatus $payout_status
+ * @property PayoutHoldReason|null $payout_hold_reason
+ * @property string|null $payout_note
  * @property int|null $paid_by
  * @property Carbon|null $paid_at
  * @property Carbon|null $created_at
@@ -30,6 +33,8 @@ use Spatie\Activitylog\Support\LogOptions;
     'quantity',
     'price',
     'payout_status',
+    'payout_hold_reason',
+    'payout_note',
     'paid_by',
     'paid_at',
 ])]
@@ -49,6 +54,7 @@ class OrderItem extends Model
             'quantity' => 'integer',
             'price' => 'decimal:2',
             'payout_status' => PayoutStatus::class,
+            'payout_hold_reason' => PayoutHoldReason::class,
             'paid_at' => 'datetime',
         ];
     }

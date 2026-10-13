@@ -3,6 +3,7 @@
 use App\Enums\ItemCondition;
 use App\Enums\ItemStatus;
 use App\Enums\OrderStatus;
+use App\Enums\PayoutHoldReason;
 use App\Enums\PayoutStatus;
 use App\Enums\ReportStatus;
 use App\Models\Category;
@@ -43,6 +44,13 @@ test('enums have expected cases and values', function () {
     expect(PayoutStatus::PaidDigitally->value)->toBe('paid_digitally');
     expect(PayoutStatus::CashHeld->value)->toBe('cash_held');
     expect(PayoutStatus::CashClaimed->value)->toBe('cash_claimed');
+
+    expect(PayoutHoldReason::FixedAmountQr->value)->toBe('fixed_amount_qr');
+    expect(PayoutHoldReason::UnreadableQr->value)->toBe('unreadable_qr');
+    expect(PayoutHoldReason::InsufficientDigitalFunds->value)->toBe('insufficient_digital_funds');
+    expect(PayoutHoldReason::SellerRequest->value)->toBe('seller_request');
+    expect(PayoutHoldReason::Other->value)->toBe('other');
+    expect(PayoutHoldReason::FixedAmountQr->label())->toBe('QR code contains a locked/fixed amount');
 
     expect(ReportStatus::Pending->value)->toBe('pending');
     expect(ReportStatus::Resolved->value)->toBe('resolved');
@@ -154,6 +162,7 @@ test('order item casts and relationships work', function () {
     $orderItem = new OrderItem;
 
     expect($orderItem->getCasts()['payout_status'])->toBe(PayoutStatus::class);
+    expect($orderItem->getCasts()['payout_hold_reason'])->toBe(PayoutHoldReason::class);
     expect($orderItem->getCasts()['price'])->toBe('decimal:2');
     expect($orderItem->getCasts()['quantity'])->toBe('integer');
     expect($orderItem->getCasts()['paid_at'])->toBe('datetime');

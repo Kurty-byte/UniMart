@@ -26,11 +26,25 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $two_factor_confirmed_at
  * @property string|null $remember_token
  * @property string|null $ewallet_qr_code
+ * @property string|null $ewallet_provider
+ * @property string|null $ewallet_account_name
+ * @property string|null $ewallet_account_number
+ * @property string|null $ewallet_qr_payload
  * @property Carbon|null $suspended_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password', 'ewallet_qr_code', 'suspended_at'])]
+#[Fillable([
+    'name',
+    'email',
+    'password',
+    'ewallet_qr_code',
+    'ewallet_provider',
+    'ewallet_account_name',
+    'ewallet_account_number',
+    'ewallet_qr_payload',
+    'suspended_at',
+])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -78,6 +92,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasEwalletQr(): bool
     {
         return $this->ewallet_qr_code !== null;
+    }
+
+    /**
+     * Determine if the user has e-wallet details (QR code or account number) configured.
+     */
+    public function hasEwalletDetails(): bool
+    {
+        return $this->hasEwalletQr() || ! empty($this->ewallet_account_number);
     }
 
     /**
