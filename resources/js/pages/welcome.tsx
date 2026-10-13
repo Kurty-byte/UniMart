@@ -121,7 +121,7 @@ export default function Welcome() {
 
                                 {/* Main Headline */}
                                 <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-[1.1]">
-                                    Buy, Sell & Trade Campus Gear.{' '}
+                                    Buy & Sell Campus Gear.{' '}
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-ocean-teal to-seafoam-aqua">
                                         Zero Flakes. 100% Scam-Free.
                                     </span>
@@ -130,7 +130,7 @@ export default function Welcome() {
                                 {/* Subtitle */}
                                 <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-2xl">
                                     Say goodbye to sketchy meetups, ghosted chats, and overpriced textbooks.
-                                    UniMart connects students through an admin-verified physical consignment hub, 
+                                    UniMart connects students through a staff-verified physical consignment hub, 
                                     QR-code handovers, and instant payouts.
                                 </p>
 
@@ -234,7 +234,7 @@ export default function Welcome() {
                                                 <div className="h-full w-3/4 rounded-full bg-gradient-to-r from-golden-sand to-ocean-teal" />
                                             </div>
                                             <p className="mt-2 text-[11px] text-muted-foreground">
-                                                Reserved for pickup at Admin Hub Room 204.
+                                                Reserved for pickup at Campus Hub Room 204.
                                             </p>
                                         </div>
 
@@ -265,7 +265,7 @@ export default function Welcome() {
                                                 <QrCode className="size-full text-slate-900" />
                                             </div>
                                             <div className="overflow-hidden">
-                                                <p className="text-[11px] font-bold text-white truncate">Scan at Admin Hub</p>
+                                                <p className="text-[11px] font-bold text-white truncate">Scan at Campus Hub</p>
                                                 <p className="text-[10px] text-white/70">Tap to present QR</p>
                                             </div>
                                         </div>
@@ -283,7 +283,7 @@ export default function Welcome() {
                                         </div>
                                         <div className="text-left">
                                             <p className="text-[11px] font-extrabold text-foreground">₱450.00 Disbursed</p>
-                                            <p className="text-[9px] text-muted-foreground">Auto-sent to Seller's E-Wallet</p>
+                                            <p className="text-[9px] text-muted-foreground">Disbursed to Seller's E-Wallet</p>
                                         </div>
                                     </div>
 
@@ -306,7 +306,7 @@ export default function Welcome() {
                                         Campus Consignment
                                     </span>
                                     <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-                                        A safer, smarter way to trade gear on campus.
+                                        A safer, smarter way to buy and sell gear on campus.
                                     </h2>
                                 </div>
                                 <div className="lg:col-span-6 flex items-center">
@@ -323,9 +323,9 @@ export default function Welcome() {
                                     <div className="flex size-12 items-center justify-center rounded-2xl bg-ocean-teal/10 text-ocean-teal">
                                         <Building2 className="size-6" />
                                     </div>
-                                    <h3 className="text-lg font-bold text-foreground">Physical Admin Hub</h3>
+                                    <h3 className="text-lg font-bold text-foreground">Physical Campus Hub</h3>
                                     <p className="text-sm text-muted-foreground leading-relaxed">
-                                        Drop off items once at the on-campus hub. Admin staff verifies item quality, safe-keeps inventory, and handles handovers directly.
+                                        Drop off items once at the on-campus hub. Authorized Staff verifies item quality, safe-keeps inventory, and handles handovers directly.
                                     </p>
                                 </div>
 
@@ -345,9 +345,9 @@ export default function Welcome() {
                                     <div className="flex size-12 items-center justify-center rounded-2xl bg-seafoam-aqua/15 text-seafoam-aqua-700 dark:text-seafoam-aqua">
                                         <Wallet className="size-6" />
                                     </div>
-                                    <h3 className="text-lg font-bold text-foreground">Dual Instant Payouts</h3>
+                                    <h3 className="text-lg font-bold text-foreground">Dual-Payout System</h3>
                                     <p className="text-sm text-muted-foreground leading-relaxed">
-                                        Get your payout auto-transferred to your e-wallet (GCash / Maya) upon scan, or claim physical cash right at the hub.
+                                        Receive your payout directly to your e-wallet (GCash / Maya) via QR scan once sold, or claim physical cash right at the hub.
                                     </p>
                                 </div>
                             </div>
@@ -385,9 +385,9 @@ export default function Welcome() {
                                     <span className="text-4xl sm:text-5xl font-black tracking-tight text-ocean-teal dark:text-seafoam-aqua">
                                         100%
                                     </span>
-                                    <h3 className="mt-2 text-xl font-bold text-foreground">Scam-Free Trading</h3>
+                                    <h3 className="mt-2 text-xl font-bold text-foreground">Scam-Free Transactions</h3>
                                     <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                                        Every single item is physically inspected by admin staff before going live. No mystery packages, no broken zippers, and no misrepresented textbooks.
+                                        Every single item is physically inspected by authorized Staff before going live. No mystery packages, no broken zippers, and no misrepresented textbooks.
                                     </p>
                                 </div>
                                 <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-ocean-teal">
@@ -455,7 +455,7 @@ export default function Welcome() {
                                         <div className="size-7 rounded-full bg-ocean-teal text-white flex items-center justify-center text-[10px] font-bold ring-2 ring-card">B</div>
                                         <div className="size-7 rounded-full bg-golden-sand text-white flex items-center justify-center text-[10px] font-bold ring-2 ring-card">S</div>
                                     </div>
-                                    <span className="text-xs text-muted-foreground">Instant toggle between buying & selling</span>
+                                    <span className="text-xs text-muted-foreground">Seamless access to buying & selling in one profile</span>
                                 </div>
                             </div>
 
@@ -470,9 +470,6 @@ export default function Welcome() {
                                         </div>
                                         <p className="text-xs text-muted-foreground mt-1">Average student expenditure saved each term</p>
                                     </div>
-                                    <span className="rounded-full bg-ocean-teal/10 px-3 py-1 text-xs font-bold text-ocean-teal">
-                                        Fast 48h Sale
-                                    </span>
                                 </div>
 
                                 {/* Simulated sparkline graph matching Dribbble inspiration */}
@@ -573,7 +570,7 @@ export default function Welcome() {
                                 </div>
                                 <h3 className="text-xl font-bold text-white">Handover & Payout</h3>
                                 <p className="mt-3 text-sm text-slate-300 leading-relaxed">
-                                    Buyer presents their <strong>Claim QR</strong> at the Hub. Admin hands over the item and immediately disburses funds to the seller's e-wallet or cash claim.
+                                    Buyer presents their <strong>Claim QR</strong> and pays cash at the Hub. Staff hands over the item and disburses funds to the seller's e-wallet or marks for cash claim.
                                 </p>
                                 <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-ocean-teal-300">
                                     <Zap className="size-4" />
@@ -614,7 +611,7 @@ export default function Welcome() {
                             <div className="p-6 rounded-2xl bg-card border border-border/60">
                                 <span className="text-4xl sm:text-5xl font-black text-seafoam-aqua">0%</span>
                                 <p className="mt-2 text-sm font-bold text-foreground">Meetup Flake Rate</p>
-                                <p className="text-xs text-muted-foreground mt-1">Backed by the physical campus admin hub</p>
+                                <p className="text-xs text-muted-foreground mt-1">Backed by the physical campus Hub</p>
                             </div>
                         </div>
                     </div>
@@ -724,7 +721,7 @@ export default function Welcome() {
                                 Built for Buyers & Sellers Alike
                             </h2>
                             <p className="mt-3 text-sm text-muted-foreground">
-                                Transparent, student-first consignment with 0% upfront fees to list.
+                                Transparent, student-first consignment powered by a unified campus profile.
                             </p>
                         </div>
 
@@ -759,7 +756,7 @@ export default function Welcome() {
                                         </li>
                                         <li className="flex items-center gap-3">
                                             <CheckCircle2 className="size-4 text-ocean-teal shrink-0" />
-                                            <span>Pay cash at the hub or digitally upon claim</span>
+                                            <span>Pay in physical cash at the Hub upon claim</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -777,16 +774,9 @@ export default function Welcome() {
 
                             {/* Card 2: For Sellers (Highlighted) */}
                             <div className="rounded-3xl border border-ocean-teal bg-gradient-to-br from-card to-ocean-teal/5 p-8 flex flex-col justify-between shadow-md relative overflow-hidden">
-                                <div className="absolute top-0 right-0 rounded-bl-xl bg-ocean-teal px-3 py-1 text-[11px] font-bold text-white">
-                                    Popular
-                                </div>
-
                                 <div>
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="text-2xl font-bold text-foreground">For Student Sellers</h3>
-                                        <span className="rounded-full bg-golden-sand/20 px-3 py-1 text-xs font-bold text-golden-sand-700 dark:text-golden-sand">
-                                            0% Upfront Fee
-                                        </span>
                                     </div>
                                     <p className="text-sm text-muted-foreground mb-6">
                                         Turn your completed course items and old uniforms into instant cash without managing meetups.
@@ -807,7 +797,7 @@ export default function Welcome() {
                                         </li>
                                         <li className="flex items-center gap-3">
                                             <CheckCircle2 className="size-4 text-seafoam-aqua shrink-0" />
-                                            <span>Instant automated payout to GCash/Maya</span>
+                                            <span>Dual payout via e-wallet (GCash/Maya QR) or cash claim</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -817,7 +807,7 @@ export default function Welcome() {
                                         href={register()}
                                         className="flex w-full items-center justify-center gap-2 rounded-full bg-ocean-teal py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-ocean-teal-600 hover:shadow-md"
                                     >
-                                        <span>Create Seller Listing</span>
+                                        <span>Start Listing Items</span>
                                         <ArrowRight className="size-4" />
                                     </Link>
                                 </div>
@@ -843,7 +833,7 @@ export default function Welcome() {
                                     Ready to declutter your locker or find affordable campus gear?
                                 </h2>
                                 <p className="mt-4 text-sm sm:text-base text-slate-300">
-                                    Join thousands of fellow university students trading safely with UniMart.
+                                    Join thousands of fellow university students buying and selling safely with UniMart.
                                     Fast, verified, and physically backed right on campus.
                                 </p>
 
@@ -876,7 +866,7 @@ export default function Welcome() {
                                     <MapPin className="size-6" />
                                 </div>
                                 <div>
-                                    <h4 className="text-base font-bold text-foreground">Campus Admin Hub Location & Hours</h4>
+                                    <h4 className="text-base font-bold text-foreground">Campus Hub Location & Hours</h4>
                                     <p className="text-xs text-muted-foreground mt-0.5">
                                         Student Center Building, Room 204 • Open Mon–Fri, 8:00 AM – 5:00 PM
                                     </p>
@@ -941,7 +931,7 @@ export default function Welcome() {
                             <div className="space-y-3 text-xs">
                                 <h4 className="font-bold text-foreground uppercase tracking-wider">Hub & Support</h4>
                                 <ul className="space-y-2">
-                                    <li><a href="#hub" className="hover:text-foreground">Admin Hub Schedule</a></li>
+                                    <li><a href="#hub" className="hover:text-foreground">Campus Hub Schedule</a></li>
                                     <li><a href="#hub" className="hover:text-foreground">Drop-off Guidelines</a></li>
                                     <li><Link href={login()} className="hover:text-foreground">Student Portal</Link></li>
                                     <li><Link href={register()} className="hover:text-foreground">Register Account</Link></li>

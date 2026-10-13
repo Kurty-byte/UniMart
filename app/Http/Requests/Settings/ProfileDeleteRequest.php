@@ -5,6 +5,7 @@ namespace App\Http\Requests\Settings;
 use App\Concerns\PasswordValidationRules;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class ProfileDeleteRequest extends FormRequest
 {
@@ -25,7 +26,7 @@ class ProfileDeleteRequest extends FormRequest
     /**
      * Configure the validator instance.
      */
-    public function withValidator(\Illuminate\Validation\Validator $validator): void
+    public function withValidator(Validator $validator): void
     {
         $validator->after(function ($validator) {
             if ($this->user()?->hasMarketplaceHistory()) {

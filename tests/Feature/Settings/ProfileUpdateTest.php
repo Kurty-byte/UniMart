@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\Item;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 
 test('profile page is displayed', function () {
     $user = User::factory()->create();
@@ -86,7 +88,7 @@ test('correct password must be provided to delete account', function () {
 
 test('user with listings cannot delete their account', function () {
     $user = User::factory()->student()->create();
-    \App\Models\Item::factory()->for($user, 'seller')->create();
+    Item::factory()->for($user, 'seller')->create();
 
     $this->actingAs($user)
         ->delete(route('profile.destroy'), ['password' => 'password'])
@@ -96,7 +98,7 @@ test('user with listings cannot delete their account', function () {
 });
 
 test('deleting a category with items is blocked at the database level', function () {
-    $item = \App\Models\Item::factory()->create();
+    $item = Item::factory()->create();
 
-    expect(fn () => $item->category->delete())->toThrow(\Illuminate\Database\QueryException::class);
+    expect(fn () => $item->category->delete())->toThrow(QueryException::class);
 });

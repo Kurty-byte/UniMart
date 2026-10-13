@@ -17,7 +17,7 @@ Table users {
   two_factor_recovery_codes text
   two_factor_confirmed_at timestamp
   remember_token varchar
-  ewallet_qr_code varchar [note: 'To be added: Seller e-wallet QR image path for digital payouts']
+  ewallet_qr_code varchar [null, note: 'Seller e-wallet QR image path for digital payouts']
   suspended_at timestamp [null, note: 'Admin moderation: marks suspended/banned accounts']
   created_at timestamp
   updated_at timestamp
@@ -114,8 +114,8 @@ Table categories {
 
 Table items {
   id integer [primary key]
-  seller_id integer [ref: > users.id]
-  category_id integer [ref: > categories.id]
+  seller_id integer [ref: > users.id, note: 'Foreign key with restrictOnDelete']
+  category_id integer [ref: > categories.id, note: 'Foreign key with restrictOnDelete']
   title varchar
   description text
   condition item_condition
@@ -123,6 +123,7 @@ Table items {
   price decimal
   quantity integer
   status item_status
+  rejection_reason text [null, note: 'Reason provided by staff when rejecting a drop-off item']
   shelf_location varchar [null, note: 'Optional shelf/bin code for Hub organization']
   dropoff_qr_code varchar [unique, note: 'ULID string (via Str::ulid). Scanned by staff during drop-off at the hub']
   dropped_off_at timestamp [null, note: 'Tracks when item physically arrived at hub for expiration logic']
@@ -133,7 +134,7 @@ Table items {
 
 Table orders {
   id integer [primary key]
-  buyer_id integer [ref: > users.id]
+  buyer_id integer [ref: > users.id, note: 'Foreign key with restrictOnDelete']
   handled_by integer [ref: > users.id, null, note: 'Staff member who completed physical handover and took payment']
   total_price decimal
   status order_status [note: 'cart (soft hold), pending_handover (hard hold), completed, cancelled, expired']
@@ -147,7 +148,7 @@ Table orders {
 Table order_items {
   id integer [primary key]
   order_id integer [ref: > orders.id]
-  item_id integer [ref: > items.id]
+  item_id integer [ref: > items.id, note: 'Foreign key with restrictOnDelete']
   quantity integer
   price decimal
   payout_status payout_status
@@ -167,11 +168,12 @@ Table messages {
 
 Table drawer_counts {
   id integer [primary key]
-  staff_id integer [ref: > users.id]
+  staff_id integer [ref: > users.id, note: 'Foreign key with restrictOnDelete']
+  opening_cash decimal [note: 'Initial cash float provided to staff at start of shift']
   shift_started_at timestamp [note: 'Start of the shift period being reconciled']
-  shift_ended_at timestamp [note: 'End of shift / reconciliation timestamp']
-  expected_cash decimal [note: 'Calculated by system based on completed sales and cash payouts in shift window']
-  actual_cash decimal [note: 'Amount of cash the staff member reports at end of shift']
+  shift_ended_at timestamp [null, note: 'End of shift / reconciliation timestamp']
+  expected_cash decimal [null, note: 'Calculated by system based on completed sales and cash payouts in shift window']
+  actual_cash decimal [null, note: 'Amount of cash the staff member reports at end of shift']
   notes text [null]
   created_at timestamp
   updated_at timestamp
@@ -184,6 +186,7 @@ Table reports {
   item_id integer [ref: > items.id, null]
   reason text
   status report_status [default: 'pending']
+  resolution_notes text [null, note: 'Notes provided by admin upon resolving or dismissing a report']
   resolved_by integer [ref: > users.id, null]
   resolved_at timestamp [null]
   created_at timestamp

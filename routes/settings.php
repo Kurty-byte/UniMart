@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\PayoutSettingsController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use Illuminate\Auth\Middleware\RequirePassword;
@@ -23,9 +24,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('throttle:6,1')
         ->name('user-password.update');
 
-    Route::get('settings/payout', [\App\Http\Controllers\Settings\PayoutSettingsController::class, 'edit'])->name('payout.edit');
-    Route::put('settings/payout', [\App\Http\Controllers\Settings\PayoutSettingsController::class, 'update'])->name('payout.update');
-    Route::delete('settings/payout', [\App\Http\Controllers\Settings\PayoutSettingsController::class, 'destroy'])->name('payout.destroy');
+    Route::get('settings/payout', [PayoutSettingsController::class, 'edit'])->name('payout.edit');
+    Route::put('settings/payout', [PayoutSettingsController::class, 'update'])->name('payout.update');
+    Route::delete('settings/payout', [PayoutSettingsController::class, 'destroy'])->name('payout.destroy');
 
     Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
 });

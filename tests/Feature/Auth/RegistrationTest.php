@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Laravel\Fortify\Features;
 
 beforeEach(function () {
@@ -45,5 +46,5 @@ test('registration accepts allowed domains case-insensitively', function () {
         'password_confirmation' => 'password',
     ])->assertSessionHasNoErrors();
 
-    expect(\App\Models\User::first()->hasRole('student'))->toBeTrue();
+    expect(User::first()->hasRole('student'))->toBeTrue();
 });

@@ -1,8 +1,7 @@
 <?php
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -14,7 +13,7 @@ use Tests\TestCase;
 |
 */
 
-use Database\Seeders\RoleAndPermissionSeeder;
+use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
