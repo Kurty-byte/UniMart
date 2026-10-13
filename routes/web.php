@@ -1,9 +1,14 @@
 <?php
 
+use App\Actions\Cart\RefreshCartHold;
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\EwalletQrController;
 use App\Http\Controllers\Student\CatalogController;
 use App\Http\Controllers\Student\ListingController;
+use App\Http\Middleware\RefreshCartSoftHold;
+use App\Models\Order;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -45,10 +50,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Student Routes (Unified Seller and Buyer)
-    Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
+    Route::middleware(['role:student', RefreshCartSoftHold::class])->prefix('student')->name('student.')->group(function () {
         Route::get('browse', [CatalogController::class, 'index'])->name('browse');
         Route::get('items/{item}', [CatalogController::class, 'show'])->name('items.show');
         Route::inertia('cart', 'student/cart')->name('cart');
+        Route::post('cart/heartbeat', function (Request $request, RefreshCartHold $refreshCartHold) {
+            $user = $request->user();
+            $cart = Order::query()
+                ->where('buyer_id', $user->id)
+                ->where('status', OrderStatus::Cart)
+                ->first();
+
+            if (! $cart) {
+                return response()->json(['status' => 'empty']);
+            }
+
+            $active = $refreshCartHold->handle($cart);
+
+            return response()->json([
+                'status' => $active ? 'active' : 'expired',
+                'expires_at' => $cart->fresh()->expires_at?->toISOString(),
+            ]);
+        })->name('cart.heartbeat');
         Route::inertia('saved', 'student/saved')->name('saved');
 
         Route::get('listings', [ListingController::class, 'index'])->name('listings.index');
