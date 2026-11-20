@@ -3,6 +3,7 @@
 use App\Actions\Cart\RefreshCartHold;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FinanceController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\ReportController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Student\NotificationController;
 use App\Http\Controllers\Student\OrderClaimController;
 use App\Http\Controllers\Student\PayoutController as StudentPayoutController;
 use App\Http\Controllers\Student\ReportController as StudentReportController;
+use App\Http\Controllers\Student\ReturnController as StudentReturnController;
 use App\Http\Controllers\Student\SalesController;
 use App\Http\Middleware\RefreshCartSoftHold;
 use App\Models\Order;
@@ -34,10 +36,10 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
+    Route::get('dashboard', function (Request $request) {
         $user = auth()->user();
         if ($user->hasRole('admin')) {
-            return inertia('dashboard');
+            return app(AdminDashboardController::class)($request);
         }
 
         if ($user->hasRole('staff')) {
@@ -137,7 +139,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('claims', [OrderClaimController::class, 'index'])->name('claims');
         Route::delete('claims/{order}', [OrderClaimController::class, 'cancel'])->name('claims.cancel');
         Route::get('sales', [SalesController::class, 'index'])->name('sales');
-        Route::inertia('returns', 'student/returns')->name('returns');
+        Route::get('returns', [StudentReturnController::class, 'index'])->name('returns');
         Route::get('payouts', [StudentPayoutController::class, 'index'])->name('payouts');
 
         Route::get('messages', [MessageController::class, 'index'])->name('messages');

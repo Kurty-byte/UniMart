@@ -29,6 +29,7 @@ it('renders the claims page with active and past orders', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page->component('student/claims')
             ->has('activeClaims', 1)
+            ->where('activeClaims.0.claim_qr_code_svg', fn ($svg) => is_string($svg) && str_contains($svg, '<svg'))
             ->has('pastClaims', 1));
 });
 

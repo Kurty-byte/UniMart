@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Student;
 
 use App\Enums\ItemCondition;
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Student\CatalogFilterRequest;
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -132,6 +134,14 @@ class CatalogController extends Controller
         $isOwn = $item->seller_id === $user->id;
         $canAddToCart = ! $isOwn && $item->isInCatalog();
 
+        $inCartQuantity = (int) (Order::query()
+            ->where('buyer_id', $user->id)
+            ->where('status', OrderStatus::Cart)
+            ->first()
+            ?->orderItems()
+            ->where('item_id', $item->id)
+            ->value('quantity') ?? 0);
+
         return Inertia::render('student/items/show', [
             'item' => [
                 'id' => $item->id,
@@ -153,7 +163,7 @@ class CatalogController extends Controller
             ],
             'isOwn' => $isOwn,
             'canAddToCart' => $canAddToCart,
-            'inCartQuantity' => 0,
+            'inCartQuantity' => $inCartQuantity,
         ]);
     }
 }

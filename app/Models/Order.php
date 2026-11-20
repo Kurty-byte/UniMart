@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\OrderStatus;
 use App\Enums\SettingKey;
+use App\Support\QrCodeEncoder;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -138,5 +139,17 @@ class Order extends Model
             ->value('total') ?? '0.00';
 
         $this->update(['total_price' => (string) number_format((float) $total, 2, '.', '')]);
+    }
+
+    /**
+     * Get the dynamic inline SVG markup for the buyer claim QR code.
+     */
+    public function claimQrCodeSvg(int $size = 240): ?string
+    {
+        if (empty($this->claim_qr_code)) {
+            return null;
+        }
+
+        return QrCodeEncoder::svg($this->claim_qr_code, $size);
     }
 }

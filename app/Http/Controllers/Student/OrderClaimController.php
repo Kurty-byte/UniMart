@@ -32,6 +32,7 @@ class OrderClaimController extends Controller
                 'status' => $order->status->value,
                 'total_price' => $order->total_price,
                 'claim_qr_code' => $order->claim_qr_code,
+                'claim_qr_code_svg' => $order->status === OrderStatus::PendingHandover ? $order->claimQrCodeSvg() : null,
                 'expires_at' => $order->expires_at?->toISOString(),
                 'completed_at' => $order->completed_at?->toISOString(),
                 'created_at' => $order->created_at?->toISOString(),
