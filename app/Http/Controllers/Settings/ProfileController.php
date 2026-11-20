@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,9 +20,13 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $user = $request->user();
+
         return Inertia::render('settings/profile', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => $request->session()->get('status'),
+            'ewalletQrUrl' => $user->ewalletQrUrl(),
+            'hasEwalletQr' => $user->hasEwalletQr(),
         ]);
     }
 
@@ -30,15 +35,58 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill($request->safe()->only([
+            'name',
+            'email',
+            'ewallet_provider',
+            'ewallet_account_name',
+            'ewallet_account_number',
+        ]));
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        if ($request->filled('qr_payload')) {
+            $user->ewallet_qr_payload = $request->input('qr_payload');
+        }
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
+        // Handle Avatar
+        if ($request->boolean('remove_avatar') && ! $request->hasFile('avatar')) {
+            $rawAvatar = $user->getRawOriginal('avatar');
+            if ($rawAvatar && Storage::disk('public')->exists($rawAvatar)) {
+                Storage::disk('public')->delete($rawAvatar);
+            }
+            $user->avatar = null;
+        } elseif ($request->hasFile('avatar')) {
+            $rawAvatar = $user->getRawOriginal('avatar');
+            if ($rawAvatar && Storage::disk('public')->exists($rawAvatar)) {
+                Storage::disk('public')->delete($rawAvatar);
+            }
+            $path = $request->file('avatar')->store("avatars/{$user->id}", 'public');
+            $user->avatar = $path;
+        }
+
+        // Handle E-wallet QR
+        if ($request->boolean('remove_ewallet_qr') && ! $request->hasFile('ewallet_qr')) {
+            if ($user->ewallet_qr_code && Storage::disk('local')->exists($user->ewallet_qr_code)) {
+                Storage::disk('local')->delete($user->ewallet_qr_code);
+            }
+            $user->ewallet_qr_code = null;
+            $user->ewallet_qr_payload = null;
+        } elseif ($request->hasFile('ewallet_qr')) {
+            if ($user->ewallet_qr_code && Storage::disk('local')->exists($user->ewallet_qr_code)) {
+                Storage::disk('local')->delete($user->ewallet_qr_code);
+            }
+            $path = $request->file('ewallet_qr')->store("ewallet-qr/{$user->id}", 'local');
+            $user->ewallet_qr_code = $path;
+        }
+
+        $user->save();
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated successfully.')]);
 
         return to_route('profile.edit');
     }
