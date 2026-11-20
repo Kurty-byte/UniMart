@@ -45,7 +45,7 @@ export default function ManageTwoFactor(props: Props) {
     }
 
     return (
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xs space-y-5">
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-xs space-y-5">
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
                     <ShieldCheck className="size-4 text-ocean-teal dark:text-seafoam-aqua" />

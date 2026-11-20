@@ -76,6 +76,8 @@ export function InPageNav({
     ariaLabel = 'In-page navigation',
     ...props
 }: InPageNavProps) {
+    const hasTabButtons = Boolean(items?.some((item) => !item.href));
+
     return (
         <div
             data-slot="in-page-nav"
@@ -83,7 +85,7 @@ export function InPageNav({
             {...props}
         >
             {items ? (
-                <InPageNavList aria-label={ariaLabel}>
+                <InPageNavList aria-label={ariaLabel} asTabList={hasTabButtons}>
                     {items.map((item, index) => {
                         const key = item.href
                             ? `${toUrl(item.href)}-${index}`
@@ -131,22 +133,39 @@ export function InPageNav({
 
 export interface InPageNavListProps extends React.ComponentProps<'nav'> {
     'aria-label'?: string;
+    asTabList?: boolean;
 }
 
 export function InPageNavList({
     className,
     children,
     'aria-label': ariaLabel = 'In-page navigation',
+    asTabList = false,
     ...props
 }: InPageNavListProps) {
+    const sharedClassName = cn(
+        '-mb-px flex space-x-2 sm:space-x-6 overflow-x-auto scrollbar-none',
+        className,
+    );
+
+    if (asTabList) {
+        return (
+            <div
+                data-slot="in-page-nav-list"
+                role="tablist"
+                aria-label={ariaLabel}
+                className={sharedClassName}
+            >
+                {children}
+            </div>
+        );
+    }
+
     return (
         <nav
             data-slot="in-page-nav-list"
             aria-label={ariaLabel}
-            className={cn(
-                '-mb-px flex space-x-2 sm:space-x-6 overflow-x-auto scrollbar-none',
-                className,
-            )}
+            className={sharedClassName}
             {...props}
         >
             {children}
@@ -193,8 +212,9 @@ export function InPageNavLink({
             data-slot="in-page-nav-link"
             href={href}
             prefetch={prefetch}
+            aria-current={active ? 'page' : undefined}
             className={cn(
-                'group inline-flex items-center gap-2 border-b-2 px-1 py-3 text-sm font-medium transition-colors whitespace-nowrap',
+                'group inline-flex items-center gap-2 border-b-2 px-1 py-3 text-sm font-medium transition-colors whitespace-nowrap rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                 active
                     ? 'border-primary text-foreground font-semibold'
                     : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground',
@@ -237,7 +257,7 @@ export function InPageNavButton({
             aria-selected={isActive}
             disabled={disabled}
             className={cn(
-                'group inline-flex items-center gap-2 border-b-2 px-1 py-3 text-sm font-medium transition-colors whitespace-nowrap cursor-pointer',
+                'group inline-flex items-center gap-2 border-b-2 px-1 py-3 text-sm font-medium transition-colors whitespace-nowrap cursor-pointer rounded-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                 isActive
                     ? 'border-primary text-foreground font-semibold'
                     : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground',

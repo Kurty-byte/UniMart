@@ -67,9 +67,13 @@ function renderDrawerIcon(
         typeof icon === 'function' ||
         (typeof icon === 'object' && icon !== null && 'render' in icon)
     ) {
-        const IconComponent = icon as React.ComponentType<{ className?: string }>;
+        const IconComponent = icon as React.ComponentType<{
+            className?: string;
+            'aria-hidden'?: boolean;
+        }>;
         return (
             <IconComponent
+                aria-hidden={true}
                 className={cn('size-5 text-primary shrink-0', iconClassName)}
             />
         );
@@ -123,7 +127,7 @@ export function SlidingDrawerDescription({
     return (
         <SheetDescription
             data-slot="sliding-drawer-description"
-            className={cn('text-xs text-muted-foreground', className)}
+            className={cn('text-sm text-muted-foreground', className)}
             {...props}
         />
     );
@@ -269,9 +273,9 @@ const bottomMaxWidthMap: Record<string, string> = {
 };
 
 const maxHeightMap: Record<string, string> = {
-    '85vh': 'max-h-[85vh]',
-    '90vh': 'max-h-[90vh]',
-    full: 'max-h-screen',
+    '85vh': 'max-h-[85dvh]',
+    '90vh': 'max-h-[90dvh]',
+    full: 'max-h-dvh',
 };
 
 export function SlidingDrawerContent({
@@ -291,7 +295,7 @@ export function SlidingDrawerContent({
     const isMobile = useIsMobile();
     const activeSide = side ?? (responsive ? (isMobile ? 'bottom' : desktopSide) : 'bottom');
     const isBottom = activeSide === 'bottom';
-    const heightClass = maxHeightMap[maxHeight] ?? '';
+    const heightClass = isBottom ? (maxHeightMap[maxHeight] ?? '') : '';
 
     const effectiveDesktopWidth = desktopWidth ?? (maxWidth !== 'none' ? maxWidth : 'lg');
     const widthClass = isBottom
@@ -299,7 +303,7 @@ export function SlidingDrawerContent({
         : desktopWidthMap[effectiveDesktopWidth] ?? 'sm:max-w-lg';
 
     const baseClasses = isBottom
-        ? 'w-full rounded-t-2xl overflow-y-auto px-5 py-6 pb-10 border-t'
+        ? 'w-full rounded-t-2xl overflow-y-auto px-5 py-6 pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))] border-t'
         : 'h-full overflow-y-auto p-6 border-l';
 
     return (

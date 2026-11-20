@@ -8,6 +8,8 @@ export default function InputError({
 }: HTMLAttributes<HTMLParagraphElement> & { message?: string }) {
     return message ? (
         <p
+            role="alert"
+            aria-live="polite"
             {...props}
             className={cn('text-sm text-destructive', className)}
         >

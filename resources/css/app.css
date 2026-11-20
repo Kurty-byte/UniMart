@@ -191,8 +191,8 @@
     --muted-foreground: oklch(0.700 0.045 220);
     --accent: oklch(0.260 0.065 260);
     --accent-foreground: oklch(0.965 0.020 180);
-    --destructive: oklch(0.480 0.180 25);
-    --destructive-foreground: oklch(0.960 0.050 25);
+    --destructive: oklch(0.680 0.190 25);
+    --destructive-foreground: oklch(0.132 0.045 273.5);
     --border: oklch(0.240 0.050 270);
     --input: oklch(0.240 0.050 270);
     --ring: oklch(0.746 0.126 172.5);
@@ -218,6 +218,17 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
     }
 }
 
