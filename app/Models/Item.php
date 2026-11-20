@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ItemCondition;
 use App\Enums\ItemStatus;
 use App\Enums\SettingKey;
+use App\Support\QrCodeEncoder;
 use Carbon\CarbonImmutable;
 use Database\Factories\ItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -217,5 +218,17 @@ class Item extends Model
         $days = Setting::integer(SettingKey::ItemShelfExpiryDays, 30);
 
         return $this->dropped_off_at->toImmutable()->addDays($days);
+    }
+
+    /**
+     * Get the dynamic inline SVG markup for the drop-off QR code.
+     */
+    public function dropoffQrCodeSvg(int $size = 240): ?string
+    {
+        if (empty($this->dropoff_qr_code)) {
+            return null;
+        }
+
+        return QrCodeEncoder::svg($this->dropoff_qr_code, $size);
     }
 }

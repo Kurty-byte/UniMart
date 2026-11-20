@@ -40,7 +40,7 @@ it('creates a pending drop-off listing with a ULID drop-off code', function () {
     $response = $this->actingAs($seller)->post(route('student.listings.store'), listingPayload());
 
     $item = Item::sole();
-    $response->assertRedirect(route('student.listings.show', $item));
+    $response->assertRedirect(route('student.listings.index'));
 
     expect($item->status)->toBe(ItemStatus::PendingDropoff)
         ->and($item->seller_id)->toBe($seller->id)
@@ -75,11 +75,27 @@ it('hides a listing from other students', function () {
         ->assertForbidden();
 });
 
-it('shows the owner their drop-off code', function () {
+it('shows the owner their drop-off code and dynamic QR code svg', function () {
     $item = Item::factory()->pendingDropoff()->create();
 
     $this->actingAs($item->seller->assignRole('student'))
         ->get(route('student.listings.show', $item))
         ->assertInertia(fn (Assert $page) => $page->component('student/listings/show')
-            ->where('item.dropoff_qr_code', $item->dropoff_qr_code));
+            ->where('item.dropoff_qr_code', $item->dropoff_qr_code)
+            ->where('item.dropoff_qr_code_svg', fn ($svg) => is_string($svg) && str_contains($svg, '<svg')));
+});
+
+it('never stores QR code images on disk when creating listings', function () {
+    $seller = User::factory()->student()->create();
+
+    $response = $this->actingAs($seller)->post(route('student.listings.store'), listingPayload());
+
+    $item = Item::sole();
+    $response->assertRedirect(route('student.listings.index'));
+
+    // Only user uploaded item photos exist in public disk
+    $allFiles = Storage::disk('public')->allFiles();
+    expect($allFiles)->toHaveCount(1)
+        ->and($allFiles[0])->toBe($item->images[0])
+        ->and(str_ends_with($allFiles[0], '.jpg'))->toBeTrue();
 });

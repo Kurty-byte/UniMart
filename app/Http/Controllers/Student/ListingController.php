@@ -54,7 +54,14 @@ class ListingController extends Controller
                 'dropoff_qr_code' => in_array($item->status, [ItemStatus::PendingDropoff, ItemStatus::Expired], true)
                     ? $item->dropoff_qr_code
                     : null,
+                'dropoff_qr_code_svg' => in_array($item->status, [ItemStatus::PendingDropoff, ItemStatus::Expired], true)
+                    ? $item->dropoffQrCodeSvg()
+                    : null,
+                'description' => $item->description,
+                'rejection_reason' => $item->rejection_reason,
                 'shelf_location' => $item->shelf_location,
+                'dropped_off_at' => $item->dropped_off_at?->toISOString(),
+                'shelf_expires_at' => $item->shelfExpiresAt()?->toISOString(),
                 'created_at' => $item->created_at?->toISOString(),
             ]);
 
@@ -75,6 +82,8 @@ class ListingController extends Controller
             'listings' => $listings,
             'statusCounts' => $statusCounts,
             'currentStatus' => $validStatus?->value,
+            'categories' => $this->categoryTree(),
+            'conditions' => $this->conditionOptions(),
         ]);
     }
 
@@ -105,7 +114,7 @@ class ListingController extends Controller
             $request->file('images', [])
         );
 
-        return redirect()->route('student.listings.show', $item);
+        return redirect()->route('student.listings.index');
     }
 
     /**
@@ -134,6 +143,7 @@ class ListingController extends Controller
                     'name' => $item->category->name,
                 ] : null,
                 'dropoff_qr_code' => $canShowQr ? $item->dropoff_qr_code : null,
+                'dropoff_qr_code_svg' => $canShowQr ? $item->dropoffQrCodeSvg() : null,
                 'shelf_location' => $item->shelf_location,
                 'rejection_reason' => $item->rejection_reason,
                 'dropped_off_at' => $item->dropped_off_at?->toISOString(),

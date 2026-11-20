@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\ItemCondition;
+use App\Models\Category;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -47,6 +49,31 @@ class HandleInertiaRequests extends Middleware
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'unreadNotificationsCount' => $request->user() ? $request->user()->unreadNotifications()->count() : 0,
             'unreadMessagesCount' => $request->user() ? Message::where('receiver_id', $request->user()->id)->whereNull('read_at')->count() : 0,
+            'listingCategories' => fn () => $request->user() ? Category::query()
+                ->whereNull('parent_id')
+                ->with(['children' => fn ($query) => $query->select(['id', 'name', 'parent_id'])->orderBy('name')])
+                ->orderBy('name')
+                ->get(['id', 'name'])
+                ->map(fn (Category $category) => [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'children' => $category->children->map(fn (Category $child) => [
+                        'id' => $child->id,
+                        'name' => $child->name,
+                    ])->all(),
+                ])
+                ->all() : [],
+            'listingConditions' => fn () => array_map(
+                fn (ItemCondition $condition) => [
+                    'value' => $condition->value,
+                    'label' => match ($condition) {
+                        ItemCondition::New => 'Brand New',
+                        ItemCondition::LikeNew => 'Like New',
+                        ItemCondition::Used => 'Used',
+                    },
+                ],
+                ItemCondition::cases()
+            ),
         ];
     }
 }
