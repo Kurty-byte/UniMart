@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import InputError from '@/components/input-error';
+import { PageContainer, PageHeader } from '@/components/page-layout';
 import PasswordInput from '@/components/password-input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -175,29 +176,24 @@ export default function Users({ users, filters }: UsersPageProps) {
     return (
         <>
             <Head title="Users Management" />
-            <div className="flex h-full flex-1 flex-col gap-5 p-3 sm:p-6 max-w-7xl mx-auto w-full">
-                {/* Header Section */}
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                            <UsersIcon className="size-5 sm:size-6 text-primary" />
-                            Users
-                        </h1>
-                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                            Manage user accounts, roles, access permissions, and passwords.
-                        </p>
-                    </div>
-                    <Button
-                        onClick={() => setIsCreateOpen(true)}
-                        className="gap-2 shrink-0 w-full sm:w-auto h-9 sm:h-10 text-sm"
-                    >
-                        <Plus className="size-4" />
-                        Add User
-                    </Button>
-                </div>
+            <PageContainer>
+                <PageHeader
+                    icon={UsersIcon}
+                    title="Users"
+                    description="Manage user accounts, roles, access permissions, and passwords."
+                    actions={
+                        <Button
+                            onClick={() => setIsCreateOpen(true)}
+                            className="gap-2 shrink-0"
+                        >
+                            <Plus className="size-4" />
+                            Add User
+                        </Button>
+                    }
+                />
 
                 {/* Filters Bar */}
-                <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 sm:p-4 shadow-xs lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex flex-col gap-3 rounded-2xl border bg-card p-3 sm:p-4 shadow-xs lg:flex-row lg:items-center lg:justify-between">
                     <form onSubmit={handleSearchSubmit} className="flex flex-1 items-center gap-2">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
@@ -260,7 +256,7 @@ export default function Users({ users, filters }: UsersPageProps) {
                 </div>
 
                 {/* Users Container */}
-                <div className="rounded-xl border bg-card text-card-foreground shadow-xs overflow-hidden">
+                <div className="rounded-2xl border bg-card text-card-foreground shadow-xs overflow-hidden">
                     {/* Mobile Card-Based View (< md) */}
                     <div className="md:hidden divide-y divide-border">
                         {users.data.length === 0 ? (
@@ -570,7 +566,7 @@ export default function Users({ users, filters }: UsersPageProps) {
                         </div>
                     )}
                 </div>
-            </div>
+            </PageContainer>
 
             {/* View User Details Sheet (Web) / Bottom Drawer (Mobile) */}
             <UserDetailSheet
