@@ -23,6 +23,11 @@ declare module '@inertiajs/core' {
             }[];
             unreadNotificationsCount?: number;
             unreadMessagesCount?: number;
+            cartSummary?: {
+                itemsCount: number;
+                expiresAt: string | null;
+            };
+            hasOpenShift?: boolean;
             [key: string]: unknown;
         };
     }

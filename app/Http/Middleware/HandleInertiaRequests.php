@@ -3,8 +3,10 @@
 namespace App\Http\Middleware;
 
 use App\Enums\ItemCondition;
+use App\Enums\OrderStatus;
 use App\Models\Category;
 use App\Models\Message;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -38,18 +40,39 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user() ? array_merge($request->user()->toArray(), [
-                    'roles' => $request->user()->getRoleNames(),
+                'user' => $user ? array_merge($user->toArray(), [
+                    'roles' => $user->getRoleNames(),
                 ]) : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'unreadNotificationsCount' => $request->user() ? $request->user()->unreadNotifications()->count() : 0,
-            'unreadMessagesCount' => $request->user() ? Message::where('receiver_id', $request->user()->id)->whereNull('read_at')->count() : 0,
-            'listingCategories' => fn () => $request->user() ? Category::query()
+            'unreadNotificationsCount' => $user ? $user->unreadNotifications()->count() : 0,
+            'unreadMessagesCount' => $user ? Message::where('receiver_id', $user->id)->whereNull('read_at')->count() : 0,
+            'cartSummary' => function () use ($user): array {
+                if (! $user) {
+                    return ['itemsCount' => 0, 'expiresAt' => null];
+                }
+
+                $cart = Order::query()
+                    ->where('buyer_id', $user->id)
+                    ->where('status', OrderStatus::Cart)
+                    ->withSum('orderItems', 'quantity')
+                    ->first();
+
+                return [
+                    'itemsCount' => (int) ($cart?->order_items_sum_quantity ?? 0),
+                    'expiresAt' => $cart?->expires_at?->toISOString(),
+                ];
+            },
+            'hasOpenShift' => fn (): bool => $user && ($user->hasRole('staff') || $user->hasRole('admin'))
+                ? $user->hasOpenShift()
+                : false,
+            'listingCategories' => fn () => $user ? Category::query()
                 ->whereNull('parent_id')
                 ->with(['children' => fn ($query) => $query->select(['id', 'name', 'parent_id'])->orderBy('name')])
                 ->orderBy('name')
