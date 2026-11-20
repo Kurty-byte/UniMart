@@ -55,14 +55,14 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-} from '@/components/ui/sheet';
+    SlidingDrawer,
+    SlidingDrawerClose,
+    SlidingDrawerContent,
+    SlidingDrawerDescription,
+    SlidingDrawerFooter,
+    SlidingDrawerHeader,
+    SlidingDrawerTitle,
+} from '@/components/ui/sliding-drawer';
 import { Spinner } from '@/components/ui/spinner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import admin from '@/routes/admin';
@@ -644,7 +644,6 @@ function UserDetailSheet({
     onToggleSuspend,
     onDelete,
 }: UserDetailSheetProps) {
-    const isMobile = useIsMobile();
     const [cachedUser, setCachedUser] = useState<ManagedUser | null>(user);
 
     useEffect(() => {
@@ -656,30 +655,19 @@ function UserDetailSheet({
     const activeUser = user || cachedUser;
 
     return (
-        <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent
-                side={isMobile ? 'bottom' : 'right'}
-                className={
-                    isMobile
-                        ? 'rounded-t-2xl max-h-[85vh] overflow-y-auto px-5 py-6 pb-10 border-t space-y-6'
-                        : 'sm:max-w-md overflow-y-auto p-6 space-y-6 border-l'
-                }
+        <SlidingDrawer open={open} onOpenChange={onOpenChange}>
+            <SlidingDrawerContent
+                desktopWidth="xl"
+                maxHeight="85vh"
+                className="space-y-6"
             >
                 {activeUser && (
                     <>
-                        {isMobile && (
-                            <div className="mx-auto w-10 h-1.5 rounded-full bg-muted-foreground/20 -mt-2 mb-2" />
-                        )}
-
-                        <SheetHeader className="p-0 text-left space-y-1">
-                            <SheetTitle className="text-lg font-semibold flex items-center gap-2">
-                                <UsersIcon className="size-5 text-primary" />
-                                User Details
-                            </SheetTitle>
-                            <SheetDescription className="text-xs text-muted-foreground">
-                                Account information, role assignments, and hub activity.
-                            </SheetDescription>
-                        </SheetHeader>
+                        <SlidingDrawerHeader
+                            icon={UsersIcon}
+                            title="User Details"
+                            description="Account information, role assignments, and hub activity."
+                        />
 
                         {/* Profile Header */}
                         <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-muted/40 border border-border/60">
@@ -817,8 +805,8 @@ function UserDetailSheet({
                         </div>
                     </>
                 )}
-            </SheetContent>
-        </Sheet>
+            </SlidingDrawerContent>
+        </SlidingDrawer>
     );
 }
 
@@ -851,17 +839,13 @@ function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) {
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] p-4 sm:p-6">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                        <Plus className="size-5 text-primary" />
-                        Create New User
-                    </DialogTitle>
-                    <DialogDescription className="text-xs sm:text-sm">
-                        Create an account and assign a role with immediate verification.
-                    </DialogDescription>
-                </DialogHeader>
+        <SlidingDrawer open={open} onOpenChange={onOpenChange}>
+            <SlidingDrawerContent desktopWidth="lg" maxHeight="90vh" className="space-y-4">
+                <SlidingDrawerHeader
+                    icon={Plus}
+                    title="Create New User"
+                    description="Create an account and assign a role with immediate verification."
+                />
 
                 <form onSubmit={handleSubmit} className="space-y-4 pt-1">
                     <div className="space-y-1.5">
@@ -932,20 +916,20 @@ function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) {
                         <InputError message={errors.password_confirmation} />
                     </div>
 
-                    <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
-                        <DialogClose asChild>
+                    <SlidingDrawerFooter className="flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
+                        <SlidingDrawerClose asChild>
                             <Button type="button" variant="outline" disabled={processing} className="w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
                                 Cancel
                             </Button>
-                        </DialogClose>
+                        </SlidingDrawerClose>
                         <Button type="submit" disabled={processing} className="w-full sm:w-auto gap-1.5 h-9 sm:h-10 text-xs sm:text-sm">
                             {processing && <Spinner />}
                             Create Account
                         </Button>
-                    </DialogFooter>
+                    </SlidingDrawerFooter>
                 </form>
-            </DialogContent>
-        </Dialog>
+            </SlidingDrawerContent>
+        </SlidingDrawer>
     );
 }
 
@@ -956,7 +940,6 @@ interface EditUserDialogProps {
 }
 
 function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps) {
-    const isMobile = useIsMobile();
     const [cachedUser, setCachedUser] = useState<ManagedUser | null>(user);
 
     useEffect(() => {
@@ -967,48 +950,14 @@ function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps) {
 
     const activeUser = user || cachedUser;
 
-    if (isMobile) {
-        return (
-            <Sheet open={open} onOpenChange={onOpenChange}>
-                <SheetContent
-                    side="bottom"
-                    className="rounded-t-2xl max-h-[90vh] overflow-y-auto px-5 py-6 pb-10 border-t"
-                >
-                    <div className="mx-auto w-10 h-1.5 rounded-full bg-muted-foreground/20 -mt-2 mb-3" />
-                    <SheetHeader className="p-0 text-left mb-4">
-                        <SheetTitle className="flex items-center gap-2 text-lg">
-                            <Edit2 className="size-5 text-primary" />
-                            Edit User
-                        </SheetTitle>
-                        <SheetDescription className="text-xs text-muted-foreground">
-                            Modify name, email, role, or reset password for this user.
-                        </SheetDescription>
-                    </SheetHeader>
-
-                    {activeUser && (
-                        <EditUserForm
-                            user={activeUser}
-                            onSuccess={() => onOpenChange(false)}
-                            onCancel={() => onOpenChange(false)}
-                        />
-                    )}
-                </SheetContent>
-            </Sheet>
-        );
-    }
-
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] p-4 sm:p-6">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                        <Edit2 className="size-5 text-primary" />
-                        Edit User
-                    </DialogTitle>
-                    <DialogDescription className="text-xs sm:text-sm">
-                        Modify name, email, role, or reset password for this user.
-                    </DialogDescription>
-                </DialogHeader>
+        <SlidingDrawer open={open} onOpenChange={onOpenChange}>
+            <SlidingDrawerContent desktopWidth="lg" maxHeight="90vh" className="space-y-4">
+                <SlidingDrawerHeader
+                    icon={Edit2}
+                    title="Edit User"
+                    description="Modify name, email, role, or reset password for this user."
+                />
 
                 {activeUser && (
                     <EditUserForm
@@ -1017,8 +966,8 @@ function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps) {
                         onCancel={() => onOpenChange(false)}
                     />
                 )}
-            </DialogContent>
-        </Dialog>
+            </SlidingDrawerContent>
+        </SlidingDrawer>
     );
 }
 
