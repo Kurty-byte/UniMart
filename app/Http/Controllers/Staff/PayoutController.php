@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Staff;
 use App\Actions\Payouts\DisburseDigitalPayout;
 use App\Actions\Payouts\HoldCashPayout;
 use App\Actions\Payouts\ReleaseCashPayout;
+use App\Enums\PayoutHoldReason;
 use App\Enums\PayoutStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\HoldCashPayoutRequest;
@@ -108,10 +109,20 @@ class PayoutController extends Controller
                 ] : null,
             ]);
 
+        $holdReasons = array_map(
+            static fn (PayoutHoldReason $reason): array => [
+                'value' => $reason->value,
+                'label' => $reason->label(),
+            ],
+            PayoutHoldReason::cases()
+        );
+
         return Inertia::render('staff/payouts', [
             'pendingPayouts' => $pendingPayouts,
             'heldCashPayouts' => $heldCashPayouts,
             'recentDisbursements' => $recentDisbursements,
+            'hasOpenShift' => $request->user()?->hasOpenShift() ?? false,
+            'holdReasons' => $holdReasons,
         ]);
     }
 

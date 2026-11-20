@@ -55,6 +55,7 @@ class ClaimController extends Controller
 
         return Inertia::render('staff/claims', [
             'pendingClaims' => $pendingClaims,
+            'hasOpenShift' => $request->user()?->hasOpenShift() ?? false,
         ]);
     }
 

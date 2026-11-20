@@ -3,6 +3,7 @@
 use App\Enums\OrderStatus;
 use App\Models\Item;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -19,15 +20,32 @@ it('resolves a drop-off QR code to a pending item', function () {
         ]);
 });
 
-it('resolves a claim QR code to a pending handover order', function () {
+it('resolves a claim QR code to a pending handover order with its items', function () {
     $staff = User::factory()->staff()->create();
     $order = Order::factory()->create(['status' => OrderStatus::PendingHandover]);
+    $item = Item::factory()->create(['shelf_location' => 'Shelf-A09']);
+    OrderItem::factory()->for($order)->for($item)->create([
+        'quantity' => 1,
+        'price' => $item->price,
+    ]);
 
     $this->actingAs($staff)->postJson(route('staff.scan.resolve'), ['code' => $order->claim_qr_code])
         ->assertOk()
         ->assertJson([
             'type' => 'claim',
-            'order' => ['id' => $order->id, 'total_price' => $order->total_price],
+            'order' => [
+                'id' => $order->id,
+                'total_price' => $order->total_price,
+                'items' => [
+                    [
+                        'quantity' => 1,
+                        'item' => [
+                            'id' => $item->id,
+                            'shelf_location' => 'Shelf-A09',
+                        ],
+                    ],
+                ],
+            ],
         ]);
 });
 

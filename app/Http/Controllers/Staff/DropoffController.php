@@ -32,10 +32,12 @@ class DropoffController extends Controller
             ->through(fn (Item $item) => [
                 'id' => $item->id,
                 'title' => $item->title,
+                'description' => $item->description,
                 'condition' => $item->condition->value,
                 'price' => $item->price,
                 'quantity' => $item->quantity,
                 'dropoff_qr_code' => $item->dropoff_qr_code,
+                'image_urls' => $item->image_urls,
                 'seller' => [
                     'id' => $item->seller->id,
                     'name' => $item->seller->name,
@@ -92,6 +94,7 @@ class DropoffController extends Controller
             'price' => $item->price,
             'shelf_location' => $item->shelf_location,
             'dropoff_qr_code' => $item->dropoff_qr_code,
+            'qr_svg' => $item->dropoffQrCodeSvg(180),
             'seller_name' => $item->seller?->name,
             'category_name' => $item->category?->name,
             'dropped_off_at' => $item->dropped_off_at?->toISOString(),
