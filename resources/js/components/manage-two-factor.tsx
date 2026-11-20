@@ -45,12 +45,18 @@ export default function ManageTwoFactor(props: Props) {
     }
 
     return (
-        <div className="space-y-6">
-            <Heading
-                variant="small"
-                title="Two-factor authentication"
-                description="Manage your two-factor authentication settings"
-            />
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xs space-y-5">
+            <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                    <ShieldCheck className="size-4 text-ocean-teal dark:text-seafoam-aqua" />
+                    <h3 className="text-sm font-semibold text-foreground">
+                        Two-Factor Authentication
+                    </h3>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                    Manage your two-factor authentication settings and recovery credentials.
+                </p>
+            </div>
             {twoFactorEnabled ? (
                 <div className="flex flex-col items-start justify-start space-y-4">
                     <p className="text-sm text-muted-foreground">
