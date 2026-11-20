@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { NativeSelect } from '@/components/ui/native-select';
 import { useInitials } from '@/hooks/use-initials';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
@@ -113,8 +114,6 @@ export default function Profile({
         <>
             <Head title="Profile settings" />
 
-            <h1 className="sr-only">Profile settings</h1>
-
             <div className="space-y-8">
                 <Heading
                     variant="small"
@@ -133,7 +132,7 @@ export default function Profile({
                     {({ processing, errors }) => (
                         <>
                             {/* Section 1: Personal Information & Profile Photo */}
-                            <div className="rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xs space-y-6">
+                            <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-xs space-y-6">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
                                         <User className="size-4 text-ocean-teal dark:text-seafoam-aqua" />
@@ -275,7 +274,7 @@ export default function Profile({
                             </div>
 
                             {/* Section 3: Payout & E-Wallet Information */}
-                            <div className="rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xs space-y-5">
+                            <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-xs space-y-5">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
                                         <Wallet className="size-4 text-ocean-teal dark:text-seafoam-aqua" />
@@ -291,11 +290,11 @@ export default function Profile({
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <div className="grid gap-2">
                                         <Label htmlFor="ewallet_provider">E-Wallet Provider</Label>
-                                        <select
+                                        <NativeSelect
                                             id="ewallet_provider"
                                             name="ewallet_provider"
                                             defaultValue={(auth.user.ewallet_provider as string) ?? ''}
-                                            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground"
+                                            className="mt-1"
                                         >
                                             <option value="">Select a provider</option>
                                             <option value="gcash">GCash</option>
@@ -304,7 +303,7 @@ export default function Profile({
                                             <option value="shopeepay">ShopeePay</option>
                                             <option value="bank">Bank Transfer</option>
                                             <option value="other">Other</option>
-                                        </select>
+                                        </NativeSelect>
                                         <InputError message={errors.ewallet_provider} />
                                     </div>
 

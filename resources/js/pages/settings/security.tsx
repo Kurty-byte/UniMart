@@ -25,8 +25,6 @@ export default function Security(props: Props) {
         <>
             <Head title="Security settings" />
 
-            <h1 className="sr-only">Security settings</h1>
-
             <div className="space-y-8">
                 <Heading
                     variant="small"
@@ -34,7 +32,7 @@ export default function Security(props: Props) {
                     description="Ensure your account is protected with a strong password and multi-factor authentication."
                 />
 
-                <div className="rounded-xl border border-border bg-card p-4 sm:p-6 shadow-xs space-y-6">
+                <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-xs space-y-6">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
                             <Lock className="size-4 text-ocean-teal dark:text-seafoam-aqua" />

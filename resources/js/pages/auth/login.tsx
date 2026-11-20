@@ -37,11 +37,12 @@ export default function Login({ status, canResetPassword }: Props) {
                                     name="email"
                                     required
                                     autoFocus
-                                    tabIndex={1}
                                     autoComplete="email"
                                     placeholder="email@example.com"
+                                    aria-invalid={Boolean(errors.email)}
+                                    aria-describedby={errors.email ? 'login-email-error' : undefined}
                                 />
-                                <InputError message={errors.email} />
+                                <InputError id="login-email-error" message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
@@ -51,7 +52,6 @@ export default function Login({ status, canResetPassword }: Props) {
                                         <TextLink
                                             href={request().url}
                                             className="ml-auto text-sm"
-                                            tabIndex={5}
                                         >
                                             Forgot your password?
                                         </TextLink>
@@ -61,18 +61,18 @@ export default function Login({ status, canResetPassword }: Props) {
                                     id="password"
                                     name="password"
                                     required
-                                    tabIndex={2}
                                     autoComplete="current-password"
                                     placeholder="Password"
+                                    aria-invalid={Boolean(errors.password)}
+                                    aria-describedby={errors.password ? 'login-password-error' : undefined}
                                 />
-                                <InputError message={errors.password} />
+                                <InputError id="login-password-error" message={errors.password} />
                             </div>
 
                             <div className="flex items-center space-x-3">
                                 <Checkbox
                                     id="remember"
                                     name="remember"
-                                    tabIndex={3}
                                 />
                                 <Label htmlFor="remember">Remember me</Label>
                             </div>
@@ -80,7 +80,6 @@ export default function Login({ status, canResetPassword }: Props) {
                             <Button
                                 type="submit"
                                 className="mt-4 w-full"
-                                tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
                             >
@@ -91,7 +90,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Don't have an account?{' '}
-                            <TextLink href={register().url} tabIndex={5}>
+                            <TextLink href={register().url}>
                                 Sign up
                             </TextLink>
                         </div>

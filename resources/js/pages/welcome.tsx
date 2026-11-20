@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
     Building2,
@@ -37,11 +37,27 @@ export default function Welcome() {
 
     const targetBrowseUrl = auth?.user ? student.browse().url : register().url;
 
+    const handleHeroSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        const trimmed = searchQuery.trim();
+        if (auth?.user) {
+            router.get(student.browse().url, trimmed ? { search: trimmed } : {});
+            return;
+        }
+        router.visit(register().url);
+    };
+
     return (
         <>
             <Head title="UniMart - Campus Buy & Sell Consignment Hub" />
 
-            <div className="min-h-screen bg-background text-foreground selection:bg-ocean-teal selection:text-white">
+            <div className="min-h-dvh bg-background text-foreground selection:bg-ocean-teal-600 selection:text-white">
+                <a
+                    href="#main-content"
+                    className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg focus:ring-2 focus:ring-ring"
+                >
+                    Skip to main content
+                </a>
                 {/* 1. Header / Navbar */}
                 <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/85 backdrop-blur-md">
                     <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -82,10 +98,10 @@ export default function Welcome() {
                             {auth?.user ? (
                                 <Link
                                     href={dashboard()}
-                                    className="inline-flex items-center justify-center gap-2 rounded-full bg-ocean-teal px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-ocean-teal-600 hover:shadow-md"
+                                    className="inline-flex items-center justify-center gap-2 rounded-full bg-ocean-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-ocean-teal-700 hover:shadow-md"
                                 >
                                     <span>Go to Portal</span>
-                                    <ArrowRight className="size-4" />
+                                    <ArrowRight className="size-4" aria-hidden="true" />
                                 </Link>
                             ) : (
                                 <>
@@ -97,7 +113,7 @@ export default function Welcome() {
                                     </Link>
                                     <Link
                                         href={register()}
-                                        className="inline-flex items-center justify-center rounded-full bg-ocean-teal px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-ocean-teal-600 hover:shadow-md"
+                                        className="inline-flex items-center justify-center rounded-full bg-ocean-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-ocean-teal-700 hover:shadow-md"
                                     >
                                         Get Started
                                     </Link>
@@ -107,6 +123,7 @@ export default function Welcome() {
                     </div>
                 </header>
 
+                <main id="main-content" tabIndex={-1} className="focus:outline-none">
                 {/* 2. Hero Section */}
                 <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
                     {/* Subtle background ambient glows */}
@@ -134,26 +151,30 @@ export default function Welcome() {
                                     QR-code handovers, and instant payouts.
                                 </p>
 
-                                {/* Action / Search bar input matching inspo style */}
-                                <div className="mt-8 flex w-full max-w-lg flex-col sm:flex-row gap-3">
+                                {/* Action / Search bar input */}
+                                <form
+                                    onSubmit={handleHeroSearch}
+                                    className="mt-8 flex w-full max-w-lg flex-col sm:flex-row gap-3"
+                                >
                                     <div className="relative flex-1">
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" aria-hidden="true" />
                                         <input
-                                            type="text"
+                                            type="search"
+                                            aria-label="Search campus gear"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             placeholder="Search uniforms, textbooks, PE gear..."
-                                            className="w-full rounded-full border border-border bg-card/80 py-3.5 pl-11 pr-4 text-sm text-foreground shadow-xs placeholder:text-muted-foreground focus:border-ocean-teal focus:outline-hidden focus:ring-2 focus:ring-ocean-teal/20"
+                                            className="w-full rounded-full border border-border bg-card/80 py-3.5 pl-11 pr-4 text-base md:text-sm text-foreground shadow-xs placeholder:text-muted-foreground focus:border-ocean-teal-600 focus:outline-hidden focus:ring-2 focus:ring-ocean-teal-600/20"
                                         />
                                     </div>
-                                    <Link
-                                        href={targetBrowseUrl}
-                                        className="inline-flex items-center justify-center gap-2 rounded-full bg-ocean-teal px-7 py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-ocean-teal-600 hover:shadow-lg shrink-0"
+                                    <button
+                                        type="submit"
+                                        className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-ocean-teal-600 px-7 py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-ocean-teal-700 hover:shadow-lg shrink-0"
                                     >
-                                        <span>Get Started</span>
-                                        <ArrowRight className="size-4" />
-                                    </Link>
-                                </div>
+                                        <span>{auth?.user ? 'Search Catalog' : 'Get Started'}</span>
+                                        <ArrowRight className="size-4" aria-hidden="true" />
+                                    </button>
+                                </form>
 
                                 {/* Trust Proof Badges */}
                                 <div className="mt-10 pt-8 border-t border-border/60 w-full">
@@ -186,7 +207,7 @@ export default function Welcome() {
                                 <div className="relative w-full max-w-md">
                                     
                                     {/* Main Base Card (Consignment Item Slip) */}
-                                    <div className="relative rounded-3xl border border-border/80 bg-card/95 p-6 shadow-2xl backdrop-blur-xl transition-transform duration-500 hover:scale-[1.02]">
+                                    <div className="relative rounded-3xl border border-border/80 bg-card/95 p-6 shadow-2xl backdrop-blur-xl">
                                         {/* Card Header */}
                                         <div className="flex items-center justify-between border-b border-border/60 pb-4">
                                             <div className="flex items-center gap-3">
@@ -196,8 +217,8 @@ export default function Welcome() {
                                                     <p className="text-xs text-muted-foreground">Order #UM-9482 • Verified Item</p>
                                                 </div>
                                             </div>
-                                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                                                <span className="size-1.5 rounded-full bg-emerald-500 animate-ping" />
+                                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+                                                <span className="size-1.5 rounded-full bg-emerald-500 animate-ping motion-reduce:animate-none" />
                                                 Ready for Claim
                                             </span>
                                         </div>
@@ -206,7 +227,7 @@ export default function Welcome() {
                                         <div className="my-5 space-y-3">
                                             <div className="flex items-start justify-between">
                                                 <div>
-                                                    <span className="text-xs font-medium text-ocean-teal uppercase tracking-wider">College of Nursing</span>
+                                                    <span className="text-xs font-medium text-ocean-teal-700 dark:text-seafoam-aqua uppercase tracking-wider">College of Nursing</span>
                                                     <h4 className="text-base font-bold text-foreground">Official Clinical Scrub Set (Size M)</h4>
                                                 </div>
                                                 <span className="rounded-md bg-golden-sand/15 px-2 py-0.5 text-xs font-bold text-golden-sand-700 dark:text-golden-sand">
@@ -215,9 +236,9 @@ export default function Welcome() {
                                             </div>
 
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-3xl font-extrabold text-foreground">₱450.00</span>
-                                                <span className="text-sm text-muted-foreground line-through">₱1,400.00</span>
-                                                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">vs Bookstore</span>
+                                                <span className="text-3xl font-extrabold text-foreground tabular-nums">₱450.00</span>
+                                                <span className="text-sm text-muted-foreground line-through tabular-nums">₱1,400.00</span>
+                                                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">vs Bookstore</span>
                                             </div>
                                         </div>
 
@@ -225,10 +246,10 @@ export default function Welcome() {
                                         <div className="rounded-2xl bg-muted/60 p-3.5 border border-border/60 mb-5">
                                             <div className="flex items-center justify-between text-xs">
                                                 <div className="flex items-center gap-1.5 font-semibold text-foreground">
-                                                    <Clock className="size-3.5 text-golden-sand" />
+                                                    <Clock className="size-3.5 text-golden-sand-700 dark:text-golden-sand" aria-hidden="true" />
                                                     <span>Hard Hold Active</span>
                                                 </div>
-                                                <span className="font-mono font-bold text-ocean-teal">18h 42m remaining</span>
+                                                <span className="font-mono font-bold text-ocean-teal-700 dark:text-seafoam-aqua tabular-nums">18h 42m remaining</span>
                                             </div>
                                             <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
                                                 <div className="h-full w-3/4 rounded-full bg-gradient-to-r from-golden-sand to-ocean-teal" />
@@ -277,7 +298,7 @@ export default function Welcome() {
                                     </div>
 
                                     {/* Floating Overlay Card 2: Instant Payout Banner (Top Left) */}
-                                    <div className="absolute -top-6 -left-4 sm:-left-6 rounded-2xl bg-card/95 border border-border/80 px-3.5 py-2.5 shadow-xl backdrop-blur-md flex items-center gap-2.5 animate-bounce [animation-duration:4s]">
+                                    <div className="absolute -top-6 -left-4 sm:-left-6 rounded-2xl bg-card/95 border border-border/80 px-3.5 py-2.5 shadow-xl backdrop-blur-md flex items-center gap-2.5 animate-bounce [animation-duration:4s] motion-reduce:animate-none">
                                         <div className="flex size-7 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                                             <Wallet className="size-3.5" />
                                         </div>
@@ -377,12 +398,12 @@ export default function Welcome() {
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-12">
                             
                             {/* Bento 1: 100% Scam-Free (Big Stat Card) */}
-                            <div className="rounded-3xl border border-border/80 bg-card p-8 lg:col-span-5 flex flex-col justify-between shadow-xs transition-transform duration-300 hover:scale-[1.01]">
+                            <div className="rounded-3xl border border-border/80 bg-card p-8 lg:col-span-5 flex flex-col justify-between shadow-xs">
                                 <div>
-                                    <div className="inline-flex size-10 items-center justify-center rounded-xl bg-seafoam-aqua/10 text-seafoam-aqua mb-6">
-                                        <ShieldCheck className="size-5" />
+                                    <div className="inline-flex size-10 items-center justify-center rounded-xl bg-seafoam-aqua/10 text-seafoam-aqua-700 dark:text-seafoam-aqua mb-6">
+                                        <ShieldCheck className="size-5" aria-hidden="true" />
                                     </div>
-                                    <span className="text-4xl sm:text-5xl font-black tracking-tight text-ocean-teal dark:text-seafoam-aqua">
+                                    <span className="text-4xl sm:text-5xl font-black tracking-tight text-ocean-teal-600 dark:text-seafoam-aqua">
                                         100%
                                     </span>
                                     <h3 className="mt-2 text-xl font-bold text-foreground">Scam-Free Transactions</h3>
@@ -390,14 +411,14 @@ export default function Welcome() {
                                         Every single item is physically inspected by authorized Staff before going live. No mystery packages, no broken zippers, and no misrepresented textbooks.
                                     </p>
                                 </div>
-                                <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-ocean-teal">
+                                <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-ocean-teal-700 dark:text-seafoam-aqua">
                                     <span>Verified physical inspection protocol</span>
-                                    <CheckCircle2 className="size-4" />
+                                    <CheckCircle2 className="size-4" aria-hidden="true" />
                                 </div>
                             </div>
 
                             {/* Bento 2: QR Handover Visual Flow */}
-                            <div className="rounded-3xl border border-border/80 bg-card p-8 lg:col-span-7 flex flex-col justify-between shadow-xs transition-transform duration-300 hover:scale-[1.01]">
+                            <div className="rounded-3xl border border-border/80 bg-card p-8 lg:col-span-7 flex flex-col justify-between shadow-xs">
                                 <div>
                                     <div className="inline-flex size-10 items-center justify-center rounded-xl bg-golden-sand/15 text-golden-sand mb-4">
                                         <QrCode className="size-5" />
@@ -440,7 +461,7 @@ export default function Welcome() {
                             </div>
 
                             {/* Bento 3: Unified Student Account */}
-                            <div className="rounded-3xl border border-border/80 bg-card p-8 lg:col-span-5 flex flex-col justify-between shadow-xs transition-transform duration-300 hover:scale-[1.01]">
+                            <div className="rounded-3xl border border-border/80 bg-card p-8 lg:col-span-5 flex flex-col justify-between shadow-xs">
                                 <div>
                                     <div className="inline-flex size-10 items-center justify-center rounded-xl bg-deep-indigo/10 text-deep-indigo-600 dark:text-deep-indigo-300 mb-4">
                                         <Users className="size-5" />
@@ -460,7 +481,7 @@ export default function Welcome() {
                             </div>
 
                             {/* Bento 4: Campus Savings & Speed Tracker Chart Card */}
-                            <div className="rounded-3xl border border-border/80 bg-card p-8 lg:col-span-7 flex flex-col justify-between shadow-xs transition-transform duration-300 hover:scale-[1.01]">
+                            <div className="rounded-3xl border border-border/80 bg-card p-8 lg:col-span-7 flex flex-col justify-between shadow-xs">
                                 <div className="flex items-start justify-between">
                                     <div>
                                         <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Semester Impact</span>
@@ -514,7 +535,7 @@ export default function Welcome() {
                 </section>
 
                 {/* 5. Deep Navy "How It Works" Section */}
-                <section id="how-it-works" className="py-24 bg-gradient-to-b from-[#0A0E23] via-[#0E1533] to-[#0A0E23] text-white">
+                <section id="how-it-works" className="py-24 bg-gradient-to-b from-abyssal-midnight via-abyssal-midnight-900 to-abyssal-midnight text-white">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         
                         {/* Section Header */}
@@ -599,17 +620,17 @@ export default function Welcome() {
 
                         <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 text-center">
                             <div className="p-6 rounded-2xl bg-card border border-border/60">
-                                <span className="text-4xl sm:text-5xl font-black text-ocean-teal">60% – 80%</span>
+                                <span className="text-4xl sm:text-5xl font-black text-ocean-teal-600 dark:text-ocean-teal-400">60% – 80%</span>
                                 <p className="mt-2 text-sm font-bold text-foreground">Average Student Discount</p>
                                 <p className="text-xs text-muted-foreground mt-1">Compared to brand-new bookstore prices</p>
                             </div>
                             <div className="p-6 rounded-2xl bg-card border border-border/60">
-                                <span className="text-4xl sm:text-5xl font-black text-golden-sand">2,500+</span>
+                                <span className="text-4xl sm:text-5xl font-black text-golden-sand-600 dark:text-golden-sand">2,500+</span>
                                 <p className="mt-2 text-sm font-bold text-foreground">Items Recirculated</p>
                                 <p className="text-xs text-muted-foreground mt-1">Uniforms, textbooks, and course equipment</p>
                             </div>
                             <div className="p-6 rounded-2xl bg-card border border-border/60">
-                                <span className="text-4xl sm:text-5xl font-black text-seafoam-aqua">0%</span>
+                                <span className="text-4xl sm:text-5xl font-black text-seafoam-aqua-600 dark:text-seafoam-aqua">0%</span>
                                 <p className="mt-2 text-sm font-bold text-foreground">Meetup Flake Rate</p>
                                 <p className="text-xs text-muted-foreground mt-1">Backed by the physical campus Hub</p>
                             </div>
@@ -805,10 +826,10 @@ export default function Welcome() {
                                 <div className="mt-8 pt-6 border-t border-border/40">
                                     <Link
                                         href={register()}
-                                        className="flex w-full items-center justify-center gap-2 rounded-full bg-ocean-teal py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-ocean-teal-600 hover:shadow-md"
+                                        className="flex w-full items-center justify-center gap-2 rounded-full bg-ocean-teal-600 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-ocean-teal-700 hover:shadow-md"
                                     >
                                         <span>Start Listing Items</span>
-                                        <ArrowRight className="size-4" />
+                                        <ArrowRight className="size-4" aria-hidden="true" />
                                     </Link>
                                 </div>
                             </div>
@@ -817,10 +838,10 @@ export default function Welcome() {
                     </div>
                 </section>
 
-                {/* 9. Bottom Call to Action Banner (matching Inspo CTA block) */}
+                {/* 9. Bottom Call to Action Banner */}
                 <section className="py-16 sm:py-24">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0A0E23] via-[#102B36] to-[#0A0E23] px-8 py-14 sm:p-16 text-center text-white shadow-2xl border border-white/10">
+                        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-abyssal-midnight via-ocean-teal-950 to-abyssal-midnight px-8 py-14 sm:p-16 text-center text-white shadow-2xl border border-white/10">
                             
                             {/* Decorative ambient elements */}
                             <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-ocean-teal/20 blur-3xl" />
@@ -840,10 +861,10 @@ export default function Welcome() {
                                 <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                                     <Link
                                         href={register()}
-                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-ocean-teal px-8 py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-ocean-teal-600 hover:scale-105"
+                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-ocean-teal-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-ocean-teal-700"
                                     >
                                         <span>Create Free Student Account</span>
-                                        <ArrowRight className="size-4" />
+                                        <ArrowRight className="size-4" aria-hidden="true" />
                                     </Link>
                                     <Link
                                         href={targetBrowseUrl}
@@ -942,6 +963,7 @@ export default function Welcome() {
                         </div>
                     </div>
                 </footer>
+                </main>
             </div>
         </>
     );
