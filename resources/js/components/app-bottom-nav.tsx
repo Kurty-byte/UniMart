@@ -25,12 +25,13 @@ import {
     Users,
 } from 'lucide-react';
 import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
+    SlidingDrawer,
+    SlidingDrawerContent,
+    SlidingDrawerDescription,
+    SlidingDrawerHeader,
+    SlidingDrawerTitle,
+    SlidingDrawerTrigger,
+} from '@/components/ui/sliding-drawer';
 import { LogoutConfirmationDialog } from '@/components/logout-confirmation-dialog';
 import { UserInfo } from '@/components/user-info';
 import { useCurrentUrl } from '@/hooks/use-current-url';
@@ -43,10 +44,16 @@ import { edit as editProfile } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
 import staff from '@/routes/staff';
 import student from '@/routes/student';
+import {
+    PostItemDrawer,
+    type CategoryNode,
+    type ConditionOption,
+} from '@/components/post-item-drawer';
 import type { NavItem } from '@/types';
 
 export function AppBottomNav() {
-    const { auth } = usePage().props;
+    const { auth, listingCategories, listingConditions } = usePage().props;
+    const [openSell, setOpenSell] = useState(false);
     const [openMore, setOpenMore] = useState(false);
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
     const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
@@ -160,6 +167,34 @@ export function AppBottomNav() {
                     const active = isTabActive(tab);
                     const Icon = tab.icon;
 
+                    if (tab.title === 'Sell') {
+                        const isSellActive = openSell;
+
+                        return (
+                            <button
+                                key={tab.title}
+                                type="button"
+                                onClick={() => {
+                                    cleanup();
+                                    setOpenSell(true);
+                                }}
+                                className={cn(
+                                    'flex flex-1 flex-col items-center justify-center py-2 px-1 text-[11px] font-medium transition-colors relative cursor-pointer',
+                                    isSellActive
+                                        ? 'text-ocean-teal dark:text-seafoam-aqua font-semibold'
+                                        : 'text-muted-foreground hover:text-foreground',
+                                )}
+                                aria-label="Sell an item"
+                            >
+                                {isSellActive && (
+                                    <span className="absolute top-0 w-8 h-0.5 rounded-full bg-ocean-teal dark:bg-seafoam-aqua" />
+                                )}
+                                {Icon && <Icon className="h-5 w-5 mb-0.5 shrink-0" />}
+                                <span className="truncate max-w-[64px]">{tab.title}</span>
+                            </button>
+                        );
+                    }
+
                     return (
                         <Link
                             key={tab.title}
@@ -183,8 +218,8 @@ export function AppBottomNav() {
                 })}
 
                 {/* 5th Tab: More */}
-                <Sheet open={openMore} onOpenChange={setOpenMore}>
-                    <SheetTrigger asChild>
+                <SlidingDrawer open={openMore} onOpenChange={setOpenMore}>
+                    <SlidingDrawerTrigger asChild>
                         <button
                             type="button"
                             className={cn(
@@ -201,16 +236,16 @@ export function AppBottomNav() {
                             <Menu className="h-5 w-5 mb-0.5 shrink-0" />
                             <span className="truncate max-w-[64px]">More</span>
                         </button>
-                    </SheetTrigger>
-                    <SheetContent
-                        side="bottom"
-                        className="rounded-t-2xl max-h-[85vh] overflow-y-auto px-5 py-6 space-y-6 pb-10"
-                    >
-                        <SheetHeader className="p-0 text-left">
-                            <SheetTitle className="text-base font-semibold">
+                    </SlidingDrawerTrigger>
+                    <SlidingDrawerContent responsive={false} className="space-y-6">
+                        <SlidingDrawerHeader>
+                            <SlidingDrawerTitle icon={Menu}>
                                 Menu & Account
-                            </SheetTitle>
-                        </SheetHeader>
+                            </SlidingDrawerTitle>
+                            <SlidingDrawerDescription>
+                                Quick navigation, settings, and hub operations.
+                            </SlidingDrawerDescription>
+                        </SlidingDrawerHeader>
 
                         {/* User Card */}
                         {auth.user && (
@@ -440,13 +475,22 @@ export function AppBottomNav() {
                                 <span>Log out</span>
                             </button>
                         </div>
-                    </SheetContent>
-                </Sheet>
+                    </SlidingDrawerContent>
+                </SlidingDrawer>
 
                 <LogoutConfirmationDialog
                     open={showLogoutDialog}
                     onOpenChange={setShowLogoutDialog}
                 />
+
+                {isStudent && (
+                    <PostItemDrawer
+                        open={openSell}
+                        onOpenChange={setOpenSell}
+                        categories={(listingCategories as CategoryNode[]) || []}
+                        conditions={(listingConditions as ConditionOption[]) || []}
+                    />
+                )}
             </div>
         </nav>
     );
