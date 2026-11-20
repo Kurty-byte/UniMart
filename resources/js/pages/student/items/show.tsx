@@ -26,6 +26,18 @@ export default function ItemDetail({
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
         if (!isOpen) {
+            if (typeof window !== 'undefined') {
+                const fromBrowse = sessionStorage.getItem('unimart:fromBrowse');
+                if (fromBrowse) {
+                    sessionStorage.removeItem('unimart:fromBrowse');
+                    if (window.history.length > 1) {
+                        window.history.back();
+                        return;
+                    }
+                    router.visit(fromBrowse);
+                    return;
+                }
+            }
             router.visit(student.browse().url);
         }
     };

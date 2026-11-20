@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { ItemDetailDrawer, type ListingDetailItem } from '@/components/item-detail-drawer';
+import { PageContainer, PageHeader } from '@/components/page-layout';
 import { PostItemDrawer, type CategoryNode, type ConditionOption } from '@/components/post-item-drawer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -106,27 +107,22 @@ export default function ListingsIndex({
         <>
             <Head title="My Listings - UniMart" />
 
-            <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 p-4 md:p-6">
-                {/* Header with Call to Action */}
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-                            My Listings
-                        </h1>
-                        <p className="text-sm text-muted-foreground">
-                            Manage the academic items, gear, and textbooks you've registered for consignment.
-                        </p>
-                    </div>
-
-                    <Button
-                        type="button"
-                        onClick={() => setCreateDrawerOpen(true)}
-                        className="gap-2"
-                    >
-                        <Plus className="size-4" />
-                        Post New Item
-                    </Button>
-                </div>
+            <PageContainer>
+                <PageHeader
+                    icon={Tag}
+                    title="My Listings"
+                    description="Manage the academic items, gear, and textbooks you've registered for consignment."
+                    actions={
+                        <Button
+                            type="button"
+                            onClick={() => setCreateDrawerOpen(true)}
+                            className="gap-2"
+                        >
+                            <Plus className="size-4" />
+                            Post New Item
+                        </Button>
+                    }
+                />
 
                 {/* Status Filter Tabs */}
                 <InPageNav
@@ -258,7 +254,7 @@ export default function ListingsIndex({
                         })}
                     </div>
                 )}
-            </div>
+            </PageContainer>
 
             {/* Slide-Up Drawers for Post New Item and View Details */}
             <PostItemDrawer
