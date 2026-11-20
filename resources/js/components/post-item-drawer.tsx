@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
+import { ConfirmActionDialog } from '@/components/confirm-action-dialog';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { NativeSelect } from '@/components/ui/native-select';
+import { Textarea } from '@/components/ui/textarea';
 import {
     SlidingDrawer,
     SlidingDrawerContent,
@@ -49,8 +52,9 @@ export function PostItemDrawer({
 }: PostItemDrawerProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+    const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors, reset, isDirty } = useForm({
         category_id: '',
         title: '',
         description: '',
@@ -59,6 +63,21 @@ export function PostItemDrawer({
         quantity: 1,
         images: [] as File[],
     });
+
+    const hasDraftChanges = isDirty || data.images.length > 0;
+
+    const handleDrawerOpenChange = (nextOpen: boolean) => {
+        if (!nextOpen && hasDraftChanges && !processing) {
+            setShowDiscardConfirm(true);
+            return;
+        }
+        onOpenChange(nextOpen);
+    };
+
+    const handleConfirmDiscard = () => {
+        setShowDiscardConfirm(false);
+        onOpenChange(false);
+    };
 
     useEffect(() => {
         return () => {
@@ -122,11 +141,12 @@ export function PostItemDrawer({
     };
 
     return (
-        <SlidingDrawer open={open} onOpenChange={onOpenChange}>
-            <SlidingDrawerContent
-                maxHeight="90vh"
-                desktopWidth="xl"
-            >
+        <>
+            <SlidingDrawer open={open} onOpenChange={handleDrawerOpenChange}>
+                <SlidingDrawerContent
+                    maxHeight="90vh"
+                    desktopWidth="xl"
+                >
                 <SlidingDrawerHeader
                     icon={PlusCircle}
                     title="Post an Item for Sale"
@@ -172,11 +192,10 @@ export function PostItemDrawer({
                             <Label htmlFor="drawer_category_id" className="text-xs font-semibold">
                                 Category <span className="text-destructive">*</span>
                             </Label>
-                            <select
+                            <NativeSelect
                                 id="drawer_category_id"
                                 value={data.category_id}
                                 onChange={(e) => setData('category_id', e.target.value)}
-                                className="border-input bg-transparent focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition"
                                 required
                             >
                                 <option value="" disabled>
@@ -200,7 +219,7 @@ export function PostItemDrawer({
                                         </option>
                                     );
                                 })}
-                            </select>
+                            </NativeSelect>
                             <InputError message={errors.category_id} />
                         </div>
 
@@ -208,11 +227,10 @@ export function PostItemDrawer({
                             <Label htmlFor="drawer_condition" className="text-xs font-semibold">
                                 Condition <span className="text-destructive">*</span>
                             </Label>
-                            <select
+                            <NativeSelect
                                 id="drawer_condition"
                                 value={data.condition}
                                 onChange={(e) => setData('condition', e.target.value)}
-                                className="border-input bg-transparent focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition"
                                 required
                             >
                                 {conditions.map((cond) => (
@@ -220,7 +238,7 @@ export function PostItemDrawer({
                                         {cond.label}
                                     </option>
                                 ))}
-                            </select>
+                            </NativeSelect>
                             <InputError message={errors.condition} />
                         </div>
                     </div>
@@ -273,14 +291,13 @@ export function PostItemDrawer({
                         <Label htmlFor="drawer_description" className="text-xs font-semibold">
                             Description <span className="text-destructive">*</span>
                         </Label>
-                        <textarea
+                        <Textarea
                             id="drawer_description"
                             rows={3}
                             placeholder="Describe condition, size, edition, or anything relevant for buyers..."
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
                             maxLength={2000}
-                            className="border-input bg-transparent placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] flex w-full rounded-md border p-3 text-sm shadow-xs outline-none transition"
                             required
                         />
                         <div className="flex justify-between text-[11px] text-muted-foreground">
@@ -324,10 +341,11 @@ export function PostItemDrawer({
                                     <button
                                         type="button"
                                         onClick={() => handleRemoveImage(index)}
-                                        className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-black/70 text-white transition hover:bg-destructive"
+                                        aria-label={`Remove photo ${index + 1}`}
+                                        className="absolute top-1 right-1 flex size-7 cursor-pointer items-center justify-center rounded-full bg-black/75 text-white transition hover:bg-destructive"
                                         title="Remove photo"
                                     >
-                                        <X className="size-3" />
+                                        <X className="size-3.5" aria-hidden="true" />
                                     </button>
                                     {index === 0 && (
                                         <span className="absolute bottom-1 left-1 rounded bg-black/60 px-1 py-0.2 text-[9px] font-medium text-white">
@@ -359,7 +377,7 @@ export function PostItemDrawer({
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => onOpenChange(false)}
+                            onClick={() => handleDrawerOpenChange(false)}
                         >
                             Cancel
                         </Button>
@@ -373,7 +391,7 @@ export function PostItemDrawer({
                                 'Posting Item...'
                             ) : (
                                 <>
-                                    <Upload className="mr-1.5 size-3.5" />
+                                    <Upload className="mr-1.5 size-3.5" aria-hidden="true" />
                                     Post for Approval
                                 </>
                             )}
@@ -382,5 +400,16 @@ export function PostItemDrawer({
                 </form>
             </SlidingDrawerContent>
         </SlidingDrawer>
+
+            <ConfirmActionDialog
+                open={showDiscardConfirm}
+                onOpenChange={setShowDiscardConfirm}
+                title="Discard draft listing?"
+                description="You have unsaved listing details or photos. Closing now will clear your draft."
+                confirmLabel="Discard Draft"
+                cancelLabel="Keep Editing"
+                onConfirm={handleConfirmDiscard}
+            />
+        </>
     );
 }

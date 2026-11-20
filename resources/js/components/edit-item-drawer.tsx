@@ -5,6 +5,8 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { NativeSelect } from '@/components/ui/native-select';
+import { Textarea } from '@/components/ui/textarea';
 import {
     SlidingDrawer,
     SlidingDrawerContent,
@@ -212,11 +214,10 @@ export function EditItemDrawer({
                             <Label htmlFor="edit_drawer_category_id" className="text-xs font-semibold">
                                 Category <span className="text-destructive">*</span>
                             </Label>
-                            <select
+                            <NativeSelect
                                 id="edit_drawer_category_id"
                                 value={data.category_id}
                                 onChange={(e) => setData('category_id', e.target.value)}
-                                className="border-input bg-transparent focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition"
                                 required
                             >
                                 <option value="" disabled>
@@ -240,7 +241,7 @@ export function EditItemDrawer({
                                         </option>
                                     );
                                 })}
-                            </select>
+                            </NativeSelect>
                             <InputError message={errors.category_id} />
                         </div>
 
@@ -248,11 +249,10 @@ export function EditItemDrawer({
                             <Label htmlFor="edit_drawer_condition" className="text-xs font-semibold">
                                 Condition <span className="text-destructive">*</span>
                             </Label>
-                            <select
+                            <NativeSelect
                                 id="edit_drawer_condition"
                                 value={data.condition}
                                 onChange={(e) => setData('condition', e.target.value)}
-                                className="border-input bg-transparent focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none transition"
                                 required
                             >
                                 {conditions.map((c) => (
@@ -260,7 +260,7 @@ export function EditItemDrawer({
                                         {c.label}
                                     </option>
                                 ))}
-                            </select>
+                            </NativeSelect>
                             <InputError message={errors.condition} />
                         </div>
                     </div>
@@ -319,14 +319,13 @@ export function EditItemDrawer({
                         <Label htmlFor="edit_drawer_description" className="text-xs font-semibold">
                             Item Description <span className="text-destructive">*</span>
                         </Label>
-                        <textarea
+                        <Textarea
                             id="edit_drawer_description"
                             rows={3}
                             placeholder="Describe any flaws, sizing details, textbook edition, or included accessories..."
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
                             maxLength={2000}
-                            className="border-input bg-transparent placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] flex w-full rounded-md border p-3 text-sm shadow-xs outline-none transition"
                             required
                         />
                         <div className="flex justify-between text-[11px] text-muted-foreground">
@@ -386,10 +385,11 @@ export function EditItemDrawer({
                                             <button
                                                 type="button"
                                                 onClick={() => handleRemoveExistingImage(img.path)}
-                                                className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white opacity-90 transition hover:bg-destructive"
+                                                aria-label="Remove existing photo"
+                                                className="absolute top-1 right-1 flex size-7 cursor-pointer items-center justify-center rounded-full bg-black/75 text-white transition hover:bg-destructive"
                                                 title="Remove photo"
                                             >
-                                                <Trash2 className="size-3" />
+                                                <Trash2 className="size-3.5" aria-hidden="true" />
                                             </button>
                                         )}
                                     </div>
@@ -413,10 +413,11 @@ export function EditItemDrawer({
                                     <button
                                         type="button"
                                         onClick={() => handleRemoveNewImage(idx)}
-                                        className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white opacity-90 transition hover:bg-destructive"
+                                        aria-label={`Remove new photo ${idx + 1}`}
+                                        className="absolute top-1 right-1 flex size-7 cursor-pointer items-center justify-center rounded-full bg-black/75 text-white transition hover:bg-destructive"
                                         title="Remove photo"
                                     >
-                                        <X className="size-3" />
+                                        <X className="size-3.5" aria-hidden="true" />
                                     </button>
                                 </div>
                             ))}

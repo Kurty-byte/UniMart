@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { router, Link } from '@inertiajs/react';
+import { ConfirmActionDialog } from '@/components/confirm-action-dialog';
 import { DropoffQrVoucher } from '@/components/dropoff-qr-voucher';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import {
     SlidingDrawerHeader,
     SlidingDrawerTitle,
 } from '@/components/ui/sliding-drawer';
+import { formatPeso } from '@/lib/utils';
 import student from '@/routes/student';
 import {
     AlertCircle,
@@ -95,6 +97,7 @@ export function ItemDetailDrawer({
 }: ItemDetailDrawerProps) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
     if (!item) return null;
 
@@ -103,21 +106,19 @@ export function ItemDetailDrawer({
         variant: 'outline',
     };
 
-    const handleDelete = () => {
-        if (!confirm('Are you sure you want to delete this listing? Uploaded photos will be removed.')) {
-            return;
-        }
-
+    const handleConfirmDelete = () => {
         setIsDeleting(true);
         router.delete(student.listings.destroy({ item: item.id }).url, {
             onFinish: () => {
                 setIsDeleting(false);
+                setDeleteConfirmOpen(false);
                 onOpenChange(false);
             },
         });
     };
 
     return (
+        <>
         <SlidingDrawer open={open} onOpenChange={onOpenChange}>
             <SlidingDrawerContent
                 maxHeight="90vh"
@@ -171,11 +172,11 @@ export function ItemDetailDrawer({
                                 type="button"
                                 variant="destructive"
                                 size="sm"
-                                onClick={handleDelete}
+                                onClick={() => setDeleteConfirmOpen(true)}
                                 disabled={isDeleting}
                                 className="h-8 text-xs"
                             >
-                                <Trash2 className="mr-1.5 size-3.5" />
+                                <Trash2 className="mr-1.5 size-3.5" aria-hidden="true" />
                                 Delete
                             </Button>
                         </div>
@@ -252,11 +253,8 @@ export function ItemDetailDrawer({
                         {/* Price & Details */}
                         <div className="space-y-4 md:col-span-7">
                             <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-extrabold text-foreground">
-                                    ₱{Number(item.price).toLocaleString('en-US', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                    })}
+                                <span className="text-2xl font-extrabold text-foreground tabular-nums">
+                                    {formatPeso(item.price)}
                                 </span>
                                 <span className="text-xs text-muted-foreground">
                                     ({item.quantity} {item.quantity === 1 ? 'unit' : 'units'} registered)
@@ -268,7 +266,7 @@ export function ItemDetailDrawer({
                                     <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                                         Description
                                     </h4>
-                                    <p className="mt-1 whitespace-pre-line text-xs text-foreground">
+                                    <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-foreground">
                                         {item.description}
                                     </p>
                                 </div>
@@ -307,5 +305,16 @@ export function ItemDetailDrawer({
                 </div>
             </SlidingDrawerContent>
         </SlidingDrawer>
+
+        <ConfirmActionDialog
+            open={deleteConfirmOpen}
+            onOpenChange={setDeleteConfirmOpen}
+            title={`Delete "${item.title}"?`}
+            description="This listing and its uploaded photos will be permanently removed."
+            confirmLabel={isDeleting ? 'Deleting...' : 'Delete Listing'}
+            processing={isDeleting}
+            onConfirm={handleConfirmDelete}
+        />
+        </>
     );
 }

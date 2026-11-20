@@ -333,10 +333,19 @@ function ImageUploader({
             />
 
             <div
+                role="button"
+                tabIndex={0}
+                aria-label="Upload QR code image file"
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full aspect-4/3 max-w-[340px] rounded-xl border-2 border-dashed border-muted-foreground/30 hover:border-primary/60 bg-muted/20 hover:bg-muted/40 transition-colors flex flex-col items-center justify-center p-6 text-center cursor-pointer relative overflow-hidden"
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        fileInputRef.current?.click();
+                    }
+                }}
+                className="w-full aspect-4/3 max-w-[340px] rounded-xl border-2 border-dashed border-muted-foreground/30 hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring bg-muted/20 hover:bg-muted/40 transition-colors flex flex-col items-center justify-center p-6 text-center cursor-pointer relative overflow-hidden"
             >
                 {previewUrl ? (
                     <div className="relative w-full h-full flex flex-col items-center justify-center">
@@ -419,29 +428,33 @@ export function QrScannerModal({
                 </DialogHeader>
 
                 {/* Tab Switcher */}
-                <div className="flex rounded-lg bg-muted p-1 gap-1">
+                <div role="tablist" aria-label="QR scanner input mode" className="flex rounded-lg bg-muted p-1 gap-1">
                     <button
                         type="button"
+                        role="tab"
+                        aria-selected={activeTab === 'camera'}
                         onClick={() => setActiveTab('camera')}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                             activeTab === 'camera'
                                 ? 'bg-background text-foreground shadow-xs'
                                 : 'text-muted-foreground hover:text-foreground'
                         }`}
                     >
-                        <Camera className="size-3.5" />
+                        <Camera className="size-3.5" aria-hidden="true" />
                         Live Camera
                     </button>
                     <button
                         type="button"
+                        role="tab"
+                        aria-selected={activeTab === 'upload'}
                         onClick={() => setActiveTab('upload')}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                             activeTab === 'upload'
                                 ? 'bg-background text-foreground shadow-xs'
                                 : 'text-muted-foreground hover:text-foreground'
                         }`}
                     >
-                        <Upload className="size-3.5" />
+                        <Upload className="size-3.5" aria-hidden="true" />
                         Upload Image
                     </button>
                 </div>
