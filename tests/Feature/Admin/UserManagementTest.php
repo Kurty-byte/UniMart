@@ -63,7 +63,9 @@ it('creates a new user with specified role and records HubAudit', function () {
     expect($user)->not->toBeNull()
         ->and($user->name)->toBe('Charlie Brown')
         ->and(Hash::check('secret1234', $user->password))->toBeTrue()
-        ->and($user->hasRole('student'))->toBeTrue();
+        ->and($user->hasRole('student'))->toBeTrue()
+        ->and($user->email_verified_at)->not->toBeNull()
+        ->and($user->hasVerifiedEmail())->toBeTrue();
 
     $activity = Activity::inLog('hub')->where('event', HubEvent::UserCreated->value)->first();
     expect($activity)->not->toBeNull()

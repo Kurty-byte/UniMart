@@ -40,6 +40,7 @@ use Spatie\Permission\Traits\HasRoles;
 #[Fillable([
     'name',
     'email',
+    'email_verified_at',
     'avatar',
     'password',
     'ewallet_qr_code',
@@ -76,6 +77,18 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isSuspended(): bool
     {
         return $this->suspended_at !== null;
+    }
+
+    /**
+     * Determine if the user has verified their email address.
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        if ($this->hasRole('admin')) {
+            return true;
+        }
+
+        return ! is_null($this->email_verified_at);
     }
 
     /**

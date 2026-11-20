@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
@@ -106,4 +107,16 @@ test('already verified user visiting verification link is redirected without fir
 
     Event::assertNotDispatched(Verified::class);
     expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
+});
+
+test('admin users do not have to verify their email', function () {
+    $this->seed(RoleAndPermissionSeeder::class);
+
+    $admin = User::factory()->unverified()->admin()->create();
+
+    expect($admin->hasVerifiedEmail())->toBeTrue();
+
+    $this->actingAs($admin)
+        ->get(route('dashboard'))
+        ->assertOk();
 });

@@ -19,6 +19,8 @@ it('creates a new staff member with assigned permissions', function () {
     $staff = User::where('email', 'jane.desk@university.edu.ph')->first();
     expect($staff)->not->toBeNull()
         ->and($staff->hasRole('staff'))->toBeTrue()
+        ->and($staff->email_verified_at)->not->toBeNull()
+        ->and($staff->hasVerifiedEmail())->toBeTrue()
         ->and($staff->can('item.dropoff.approve'))->toBeTrue()
         ->and($staff->can('payout.process'))->toBeFalse();
 
